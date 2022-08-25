@@ -1,0 +1,48 @@
+﻿@page
+@model Kabylan.PL.Pages.CreateModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+    .creatUserForm {
+      width: 100%;
+      height: 80%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      align-content: center;
+      justify-content: center;
+      overflow: auto;
+    }
+    .mb-3{
+      width: 300px;
+    }
+</style>
+
+<div asp-validation-summary="All"></div>
+<div class="creatUserForm">
+    <form method="POST">
+        <div class="mb-3">
+            <input asp-for="User.FirstName" class="form-control" placeholder="FirstName" />
+            <br />
+            <input asp-for="User.LastName" class="form-control" placeholder="LastNmae" />
+            <br />
+            <input type="email" asp-for="User.Email" class="form-control" placeholder="Email" />
+            <br />
+            <input type="password" asp-for="User.Password" class="form-control" placeholder="new Password" />
+        </div>
+        <div><label>Status:</label>
+            <select class="form-select" asp-for="User.Status">
+                <option value=1 selected>Employee</option>
+                <option value=2>Admin</option>
+            </select>
+        </div>
+        <div class="d-grid gap-2">
+            <br />
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>

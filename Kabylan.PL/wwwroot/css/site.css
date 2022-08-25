@@ -1,0 +1,15 @@
+body{
+    position: fixed;
+}
+
+.SaleCardsScrolPanel {
+    height: 85vh;
+}
+
+.CastomersPanel {
+    height: 45vh;
+}
+
+.PaymentPanel {
+    height: 40vh;
+}
