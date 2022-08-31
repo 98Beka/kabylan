@@ -10,60 +10,57 @@ using Kabylan.BLL.Profiles;
 namespace Kabylan.BLL.Services {
     public class SaleService : IService<SaleDTO> {
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _database;
         public SaleService(string connectionString) {
-            Database = new EFUnitOfWork(connectionString);
+            _database = new EFUnitOfWork(connectionString);
             _mapper = new MapperConfiguration(c => {
                 c.AddProfile<MapperConfig>();
             }).CreateMapper();
         }
-        IUnitOfWork Database { get; set; }
 
         public async Task<SaleDTO> GetAsync(int id) {
-            var Sale = await Database.Sales.Get(id);
+            var Sale = await _database.Sales.Get(id);
             if (Sale == null)
                 throw new ValidationException("Sale not found", "");
             return _mapper.Map<SaleDTO>(Sale);
         }
 
         public IEnumerable<SaleDTO> GetAll() {
-            return _mapper.Map<IEnumerable<Sale>, List<SaleDTO>>(Database.Sales.GetAll());
+            return _mapper.Map<IEnumerable<Sale>, List<SaleDTO>>(_database.Sales.GetAll());
         }
 
         public  SaleDTO Create() {
             var customer = new Customer();
-            Database.Customers.Create(customer);
-            customer.FirstName = "*";
-            customer.MiddleName = "*";
-            customer.LastName = "*";
+            _database.Customers.Create(customer);
             var apartment = new Apartment();
-            Database.Apartments.Create(apartment);
-            Database.Save();
+            _database.Apartments.Create(apartment);
+            _database.Save();
             var sale = new Sale() {
                 Customer = customer,
                 Apartment = apartment,
                 PaydMonths = 1,
                 SaleDate = DateTime.Today
             };
-            Database.Sales.Create(sale);
-            Database.Save();
+            _database.Sales.Create(sale);
+            _database.Save();
             return _mapper.Map<SaleDTO>(sale);
         }
 
         public async Task EditAsync(SaleDTO sale) {
             if (sale == null)
                 throw new ValidationException("Sale = null", "");
-            var oldSale = await Database.Sales.Get(sale.Id);
-            _mapper.Map(sale.Customer, oldSale.Customer);
-            _mapper.Map(sale.Apartment, oldSale.Apartment);
-            oldSale.SaleDate = sale.SaleDate;
-            oldSale.PaydMonths = sale.PaydMonths;
-            Database.Save();
+            var oldSale = await _database.Sales.Get(sale.Id);
+            _mapper.Map(sale, oldSale.Customer);
+            _mapper.Map(sale, oldSale.Apartment);
+            _mapper.Map(sale, oldSale);
+            _database.Save();
         }
 
-        public async Task AddPayment(PaymentDTO payment, int saleId) {
+        public async Task AddPayment(int moneyCount, int saleId) {
+            var payment = new Payment() { MoneyCount = moneyCount, Date = DateTime.Today };
             if (payment == null)
                 throw new ValidationException("Payment = null", "");
-            var oldSale = await Database.Sales.Get(saleId);
+            var oldSale = await _database.Sales.Get(saleId);
             if (oldSale == null)
                 return;
             int sum = 0;
@@ -72,30 +69,29 @@ namespace Kabylan.BLL.Services {
             if (sum + payment.MoneyCount > oldSale.Apartment.Price)
                 payment.MoneyCount = oldSale.Apartment.Price - sum;
             if (payment.MoneyCount > 0)
-                oldSale.Payments.Add(_mapper.Map<Payment>(payment));
-
-            Database.Save();
+                oldSale.Payments.Add(payment);
+            _database.Save();
         }        
         
         public async Task RemovePayment(int paymentId, int saleId) {
             if (paymentId == 0 || saleId == 0)
                 return;
-            var oldSale = await Database.Sales.Get(saleId);
+            var oldSale = await _database.Sales.Get(saleId);
             oldSale.Payments.Remove(oldSale.Payments.FirstOrDefault(p => p.Id == paymentId));
-            Database.Save();
+            _database.Save();
         }
         public async Task DeleteAsync(int id) {
             if (id == 0)
                 return;
-            var sale = await Database.Sales.Get(id);
+            var sale = await _database.Sales.Get(id);
             if (sale == null)
                 return;
-            Database.Apartments.Delete(sale.Apartment.Id);
-            Database.Customers.Delete(sale.Customer.Id);
+            _database.Apartments.Delete(sale.Apartment.Id);
+            _database.Customers.Delete(sale.Customer.Id);
             foreach (var payment in sale.Payments)
-                Database.Payments.Delete(payment.Id);
-            Database.Sales.Delete(id);
-            Database.Save();
+                _database.Payments.Delete(payment.Id);
+            _database.Sales.Delete(id);
+            _database.Save();
         }
     }
 }

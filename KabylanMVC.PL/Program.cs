@@ -1,7 +1,19 @@
+using AutoMapper;
+using Kabylan.BLL.Services;
+using KabylanMVC.PL.Profiles;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<SaleService, SaleService>(
+    s => new SaleService(builder.Configuration["ConnectionStrings:DefaultConnection"]));
+builder.Services.AddTransient<IMapper, IMapper>(
+    m => new MapperConfiguration(c => {
+        c.AddProfile<MapperConfig>();
+    }).CreateMapper());
 
 var app = builder.Build();
 
@@ -18,6 +30,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",
