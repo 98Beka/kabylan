@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using Kabylan.BLL.DataTransferObjects;
 using Kabylan.BLL.Infrastructure;
-using Kabylan.BLL.Interfaces;
 using Kabylan.DAL.Interfaces;
 using Kabylan.DAL.Repository;
 using Kabylan.DAL.Models;
 using Kabylan.BLL.Profiles;
 
 namespace Kabylan.BLL.Services {
-    public class SaleService : IService<SaleDTO> {
+    public class SaleService {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _database;
         public SaleService(string connectionString) {
@@ -16,6 +15,9 @@ namespace Kabylan.BLL.Services {
             _mapper = new MapperConfiguration(c => {
                 c.AddProfile<MapperConfig>();
             }).CreateMapper();
+        }
+        public IEnumerable<SaleDTO> GetAll() {
+            return _mapper.Map<IEnumerable<Sale>, List<SaleDTO>>(_database.Sales.GetAll());
         }
 
         public async Task<SaleDTO> GetAsync(int id) {
@@ -25,15 +27,11 @@ namespace Kabylan.BLL.Services {
             return _mapper.Map<SaleDTO>(Sale);
         }
 
-        public IEnumerable<SaleDTO> GetAll() {
-            return _mapper.Map<IEnumerable<Sale>, List<SaleDTO>>(_database.Sales.GetAll());
-        }
 
         public  SaleDTO Create() {
             var customer = new Customer();
             _database.Customers.Create(customer);
             var apartment = new Apartment();
-            _database.Apartments.Create(apartment);
             _database.Save();
             var sale = new Sale() {
                 Customer = customer,
@@ -86,11 +84,7 @@ namespace Kabylan.BLL.Services {
             var sale = await _database.Sales.Get(id);
             if (sale == null)
                 return;
-            _database.Apartments.Delete(sale.Apartment.Id);
             _database.Customers.Delete(sale.Customer.Id);
-            foreach (var payment in sale.Payments)
-                _database.Payments.Delete(payment.Id);
-            _database.Sales.Delete(id);
             _database.Save();
         }
     }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Kabylan.DAL.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -63,7 +63,7 @@ namespace Kabylan.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerId = table.Column<int>(type: "int", nullable: true),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     ApartmentId = table.Column<int>(type: "int", nullable: true),
                     PaydMonths = table.Column<int>(type: "int", nullable: false),
                     SaleDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -80,7 +80,8 @@ namespace Kabylan.DAL.Migrations
                         name: "FK_Sales_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,7 +92,7 @@ namespace Kabylan.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MoneyCount = table.Column<int>(type: "int", nullable: false),
-                    SaleId = table.Column<int>(type: "int", nullable: true)
+                    SaleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,13 +101,9 @@ namespace Kabylan.DAL.Migrations
                         name: "FK_Payments_Sales_SaleId",
                         column: x => x.SaleId,
                         principalTable: "Sales",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.InsertData(
-                table: "Apartments",
-                columns: new[] { "Id", "Price", "RoomCount", "Square" },
-                values: new object[] { 1, 100000, 4, 300 });
 
             migrationBuilder.InsertData(
                 table: "Customers",
@@ -114,14 +111,14 @@ namespace Kabylan.DAL.Migrations
                 values: new object[] { 1, "Name", "LastName", "MiddleName" });
 
             migrationBuilder.InsertData(
-                table: "Payments",
-                columns: new[] { "Id", "Date", "MoneyCount", "SaleId" },
-                values: new object[] { 1, new DateTime(2022, 8, 20, 0, 0, 0, 0, DateTimeKind.Local), 100000, null });
-
-            migrationBuilder.InsertData(
                 table: "Sales",
                 columns: new[] { "Id", "ApartmentId", "CustomerId", "PaydMonths", "SaleDate" },
-                values: new object[] { 1, 1, 1, 1, new DateTime(2022, 8, 20, 0, 0, 0, 0, DateTimeKind.Local) });
+                values: new object[] { 1, null, 1, 1, new DateTime(2022, 9, 1, 0, 0, 0, 0, DateTimeKind.Local) });
+
+            migrationBuilder.InsertData(
+                table: "Payments",
+                columns: new[] { "Id", "Date", "MoneyCount", "SaleId" },
+                values: new object[] { 1, new DateTime(2022, 9, 1, 0, 0, 0, 0, DateTimeKind.Local), 100000, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_SaleId",
@@ -136,7 +133,8 @@ namespace Kabylan.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Sales_CustomerId",
                 table: "Sales",
-                column: "CustomerId");
+                column: "CustomerId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

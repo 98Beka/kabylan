@@ -3,23 +3,20 @@
 
 }
 
-<h1>Обратная связь</h1>
 <div class="card mt-2">
     <div class="table-responsive card-body">
         <table id="SalesTable" class="table table-hover bg-white border" style="font-weight: 400; font-size: 80%">
             <thead>
                 <tr class="table-borderless">
                     <th>
-                        first name
+                        Имя
                     </th>
                     <th>
-                        middle name
+                        Фамилия
                     </th>
                     <th>
-                        last name
+                        Отчество
                     </th>
-
-                    <th></th>
                 </tr>
             </thead>
         </table>
@@ -30,50 +27,52 @@
 @section Scripts {
  <script>
 
-function formatDate(date) {
-    var d = new Date(date),
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    year = d.getFullYear();
+    function formatDate(date) {
+        var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
     
-    if (month.length < 2)
-        month = '0' + month;
-    if (day.length < 2)
-        day = '0' + day;
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
     
-    return [day, month, year].join('.');
-};
+        return [day, month, year].join('.');
+    };
 
-$(document).ready(function() {
-    let table = $("#SalesTable").DataTable({
-        autoWidth: true,
-        processing: true,
-        serverSide: true,
-        fixedHeader: true,
-        ordering: false,
-        colReorder: true,
-        searching: false,
-        ajax: {
-            url: "/Sales/LoadTable",
-            type: "POST",
-            contentType: "application/json",
-            dataType: "json",
-            data: function(data) {
-                return JSON.stringify(data);
-            }
-        },
-        columns: [
-            {
-                data: "id",
+    $(document).ready(function() {
+        let table = $("#SalesTable").DataTable({
+            autoWidth: true,
+            processing: true,
+            serverSide: true,
+            fixedHeader: true,
+            ordering: false,
+            colReorder: true,
+            searching: false,
+            ajax: {
+                url: "/Sales/LoadTable",
+                type: "POST",
+                contentType: "application/json",
+                dataType: "json",
+                data: function(data) {
+                    return JSON.stringify(data);
+                }
             },
-            {
-                data: "customerFirstName",
-            },
-            {
-                data: "customerMiddleName"
-            }
-        ]
+            columns: [
+                { data: "customerFirstName" },
+                { data: "customerMiddleName" },
+                { data: "customerLastName" },
+            ]
+        });
+
+        $('#SalesTable tbody').on('click', 'tr', function () {
+            var data = table.row( this ).data();
+            console.log(data.id);
+            $.get('Sales/GetSale', { id: data.id }, function(res) {
+                console.log(res);
+            })
+        });
     });
-});
-    </script>
+ </script>
 }

@@ -25,6 +25,15 @@ namespace Kabylan.DAL.Repository {
                 return _userRepository;
             }
         }
+
+        public IRepository<Apartment> Apartments {
+            get {
+                if (_apartmentRepository == null)
+                    _apartmentRepository = new ApartmentRepository(_db);
+                return _apartmentRepository;
+            }
+        }
+
         public IRepository<Sale> Sales {
             get {
                 if (_saleRepository == null)
@@ -48,14 +57,6 @@ namespace Kabylan.DAL.Repository {
                 return _customerRepository;
             }
         } 
-        
-        public IRepository<Apartment> Apartments {
-            get {
-                if (_apartmentRepository == null)
-                    _apartmentRepository = new ApartmentRepository(_db);
-                return _apartmentRepository;
-            }
-        }
 
         public void Save() {
             _db.SaveChanges();

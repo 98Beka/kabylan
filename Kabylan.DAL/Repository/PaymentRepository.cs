@@ -9,7 +9,7 @@ namespace Kabylan.DAL.Repository {
             _db = context;
         }
 
-        public IEnumerable<Payment> GetAll() {
+        public IQueryable<Payment> GetAll() {
             return _db.Payments;
         }
 

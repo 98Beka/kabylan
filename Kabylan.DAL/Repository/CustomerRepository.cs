@@ -9,7 +9,7 @@ namespace Kabylan.DAL.Repository {
             _db = context;
         }
 
-        public IEnumerable<Customer> GetAll() {
+        public IQueryable<Customer> GetAll() {
             return _db.Customers;
         }
 

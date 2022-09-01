@@ -1,6 +1,7 @@
-﻿using Kabylan.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Kabylan.DAL.Interfaces;
 using Kabylan.DAL.Models;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Kabylan.DAL.Repository {
     internal class ApartmentRepository : IRepository<Apartment> {
@@ -9,9 +10,10 @@ namespace Kabylan.DAL.Repository {
             _db = context;
         }
 
-        public IEnumerable<Apartment> GetAll() {
+        public IQueryable<Apartment> GetAll() {
             return _db.Apartments;
         }
+
         public async Task<Apartment> Get(int id) {
             return await _db.Apartments.FirstOrDefaultAsync(e => e.Id == id);
         }

@@ -1,5 +1,7 @@
 using AutoMapper;
 using Kabylan.BLL.Services;
+using Kabylan.DAL.Interfaces;
+using Kabylan.DAL.Repository;
 using KabylanMVC.PL.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,12 +10,15 @@ builder.Services.AddRazorPages()
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<SaleService, SaleService>(
-    s => new SaleService(builder.Configuration["ConnectionStrings:DefaultConnection"]));
-builder.Services.AddTransient<IMapper, IMapper>(
+string connectionStr = builder.Configuration["ConnectionStrings:DefaultConnection"];
+builder.Services.AddSingleton<SaleService, SaleService>(
+    s => new SaleService(connectionStr));
+builder.Services.AddSingleton<IUnitOfWork>(new EFUnitOfWork(connectionStr));
+builder.Services.AddSingleton<IMapper, IMapper>(
     m => new MapperConfiguration(c => {
         c.AddProfile<MapperConfig>();
     }).CreateMapper());
+
 
 var app = builder.Build();
 
