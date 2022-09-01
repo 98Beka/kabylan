@@ -13,11 +13,11 @@ namespace Kabylan.DAL.Repository {
             return _db.Payments;
         }
 
-        public async Task<Payment> Get(int id) {
+        public async Task<Payment> GetAsync(int id) {
             return await _db.Payments.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task Create(Payment Payment) {
+        public async Task CreateAsync(Payment Payment) {
             await _db.Payments.AddAsync(Payment);
         }
 

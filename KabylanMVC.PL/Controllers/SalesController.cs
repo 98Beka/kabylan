@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Kabylan.BLL.DataTransferObjects;
 using Kabylan.BLL.Services;
 using Kabylan.DAL.Interfaces;
 using KabylanMVC.PL.Models;
@@ -6,14 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KabylanMVC.PL.Controllers {
     public class SalesController : Controller {
-        private readonly IMapper _mapper;
         private readonly SaleService _saleService;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly CustomerService _customerService;
 
-        public SalesController(IMapper mapper, SaleService saleService, IUnitOfWork unitOfWork) {
-            _mapper = mapper;
+        public SalesController(SaleService saleService, CustomerService customerService) {
             _saleService = saleService;
-            _unitOfWork = unitOfWork;
+            _customerService = customerService;
         }
 
         public ActionResult Index() {
@@ -25,15 +24,13 @@ namespace KabylanMVC.PL.Controllers {
             int dtdraw = dtParameters.draw;
             int startRec = dtParameters.start;
             int pageSize = dtParameters.length;
-            var totalResultsCount = _unitOfWork.Customers
+            var totalResultsCount = _customerService.GetAll().Count();
 
-            var _data = _mapper.Map<List<SaleViewModel>>(
-                _context.Users
-                    .Skip(startRec)
-                    .Take(pageSize)
-                    .ToList()
-            );
-
+            var _data = _customerService.GetAll()
+                .Skip(startRec)
+                .Take(pageSize)
+                .ToList();
+        
             return Json(new {
                 draw = dtdraw,
                 recordsTotal = totalResultsCount,
@@ -42,10 +39,37 @@ namespace KabylanMVC.PL.Controllers {
             });
         }
 
+        [Route("Sales/DeleteCustomer")]
+        public async Task<IActionResult> DeleteCustomer(int id) {
+            if (id == null) {
+                return NotFound();
+            }
+            var customer = await _customerService.GetAsync(id);
+
+            if (customer == null) {
+                return NotFound();
+            }
+
+            return View(customer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(long id) {
+            _customerService.Delete((int)id);
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
+
         [HttpGet]
-        public async Task<SaleViewModel> GetSale(int id) {
-            var customer = await _context.Customers.FindAsync(id);
-            return _mapper.Map<SaleViewModel>( await _saleService.GetAsync(customer.Sale.Id));
+        public async Task<SaleDTO> GetSale(int id) {
+            var customer = await _customerService.GetAsync(id);
+            if (customer.Sale != null)
+                return await _saleService.GetAsync(customer.Sale.Id);
+            return null;
         }
     }
 }

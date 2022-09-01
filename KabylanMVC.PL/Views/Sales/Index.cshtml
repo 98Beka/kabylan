@@ -2,27 +2,112 @@
     ViewData["Title"] = "View";
 
 }
+<div class="row gx-3">
+    <div class="col col-sm-6">
+        <div class="table-responsive card-body SaleCardsScrolPanel">
+            <table id="SalesTable" class="table table-hover bg-white border">
+                <thead>
+                    <tr class="table-borderless">
+                        <th>
+                            Имя
+                        </th>
+                        <th>
+                            Фамилия
+                        </th>
+                        <th>
+                            Отчество
+                        </th>
 
-<div class="card mt-2">
-    <div class="table-responsive card-body">
-        <table id="SalesTable" class="table table-hover bg-white border" style="font-weight: 400; font-size: 80%">
-            <thead>
-                <tr class="table-borderless">
-                    <th>
-                        Имя
-                    </th>
-                    <th>
-                        Фамилия
-                    </th>
-                    <th>
-                        Отчество
-                    </th>
-                </tr>
-            </thead>
-        </table>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
 
+        </div>
     </div>
+
+    <div class="col col-sm-6">
+            <div class="my-3 p-3 text-center border border-3 overflow-auto CastomersPanel">
+
+                <form method="post">
+                    <div class="row p-3">
+
+                        <!--Upartment data-->
+                        <div class="col-sm-4">
+                            <label for="Square" class="form-label mb-0 mt-2">площадь</label>
+                            <input type="number" class="form-control text-center" id="Square" min=1>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="RoomCount" class="form-label mb-0 mt-2">к-во комнат</label>
+                            <input type="number" class="form-control text-center" id="RoomCount" min=1>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Price" class="form-label mb-0 mt-2">ценна $</label>
+                            <input type="number" class="form-control text-center" id="Price" min=1>
+                        </div>
+
+                        <!--Payment data-->
+                        <div class="col-sm-4">
+                            <label for="PaydMonths" class="form-label mb-0 mt-2">К-во месяцев для рассрочки</label>
+                            <input type="number" class="form-control text-center" id="PaydMonths" min=1>
+                        </div>
+                        <div class="col-sm-8 my-4 py-2 my-4">
+                            <button type="submit" class="btn border-primary w-100">Сохранить изменения</button>
+                        </div>          
+                        
+                        <div class="col-sm-4">
+                            <label for="payd" class="form-label">оплата/месяц</label>
+                            <input type="text" class="form-control text-center" id="payd" disabled>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="payd" class="form-label">оплачено</label>
+                            <input type="text" class="form-control text-center" id="payd" disabled>
+                         </div>
+                         <div class="col-sm-4">
+                             <label for="havePayd" class="form-label">ост-сь оплатить</label>
+                             <input type="text" class="form-control text-center" id="havePayd" disabled>
+                         </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="my-3 p-3 text-center border border-3 d-none d-sm-block" id="paymants">
+                <form method="post">
+
+                <div class="w-100 bg-light">
+                    <div class="row row-cols-sm-4">
+                        <div class="col-3 text-center">номер</div>
+                        <div class="col-3 text-center">дата оплаты</div>
+                        <div class="col-3 text-center">сумма</div>
+                    </div>
+                </div>
+                <ul class="list-group overflow-auto PaymentPanel">
+
+                </ul>
+
+                <div class="row">
+                    <div class="col-3">
+                     <input type="text" class="form-control text-center">
+                    </div>
+                    <div class="col-3">
+                     <input type="number" class="form-control text-center">
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn border-primary w-100">Добавить оплату</button>
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" class="btn overflow-hidden  border-danger w-100">удалить</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+
+        </div>
 </div>
+
+
+
+
 
 @section Scripts {
  <script>
@@ -50,6 +135,10 @@
             ordering: false,
             colReorder: true,
             searching: false,
+            lengthChange: false,
+            pageLength: 50,
+            scrollY:        "86vh",
+            
             ajax: {
                 url: "/Sales/LoadTable",
                 type: "POST",
@@ -60,18 +149,27 @@
                 }
             },
             columns: [
-                { data: "customerFirstName" },
-                { data: "customerMiddleName" },
-                { data: "customerLastName" },
+                { data: "firstName" },
+                { data: "middleName" },
+                { data: "lastName" },
+                {
+                       data: "id",
+                       render(data, type, row, meta) {
+                            @{<text>
+                                           return `
+                                                   <a id="editCustomer" href="/Sales/EditCustomer?id=` + data + `" class="badge mr-2 p-2 me-2" style="font-size:90%%"><i class="fa fa-edit"></i></a>
+                                                   <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteCustomer?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                               `
+                                       </text>}
+                       }
+                 }
             ]
         });
-
+        var customer;
         $('#SalesTable tbody').on('click', 'tr', function () {
-            var data = table.row( this ).data();
-            console.log(data.id);
-            $.get('Sales/GetSale', { id: data.id }, function(res) {
-                console.log(res);
-            })
+            customer = table.row( this ).data();
+            $.get('Sales/GetSale', { id: customer.id }, function(res) {
+            });
         });
     });
  </script>

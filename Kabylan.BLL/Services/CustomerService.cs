@@ -1,0 +1,52 @@
+﻿using AutoMapper;
+using Kabylan.BLL.DataTransferObjects;
+using Kabylan.BLL.Infrastructure;
+using Kabylan.DAL.Interfaces;
+using Kabylan.DAL.Repository;
+using Kabylan.DAL.Models;
+using Kabylan.BLL.Profiles;
+
+namespace Kabylan.BLL.Services {
+    public class CustomerService {
+        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _database;
+        public CustomerService(string connectionString) {
+            _database = new EFUnitOfWork(connectionString);
+            _mapper = new MapperConfiguration(c => {
+                c.AddProfile<MapperConfig>();
+            }).CreateMapper();
+        }
+        public IQueryable<Customer> GetAll() {
+            return _database.Customers.GetAll();
+        }
+
+        public async Task<Customer> GetAsync(int id) {
+            var customer = await _database.Customers.GetAsync(id);
+            if (customer == null)
+                throw new ValidationException("customer not found", "");
+            return customer;
+        }
+
+
+        public async Task<Customer> Create() {
+            var customer = new Customer();
+            await _database.Customers.CreateAsync(customer);
+            _database.Save();
+            return customer;
+        }
+
+        public void Edit(Customer customer) {
+            if (customer == null)
+                throw new ValidationException("customer = null", "");
+            _database.Customers.Update(customer);
+            _database.Save();
+        }
+
+        public void Delete(int id) {
+            if (id == 0)
+                return;
+            _database.Customers.Delete(id);
+            _database.Save();
+        }
+    }
+}

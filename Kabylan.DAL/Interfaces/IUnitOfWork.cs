@@ -11,6 +11,7 @@ namespace Kabylan.DAL.Interfaces {
         IRepository<Sale> Sales { get; }
         IRepository<Customer> Customers { get; }
         IRepository<Payment> Payments { get; }
+        IRepository<Apartment> Apartments { get; }
         void Save();
     }
 }

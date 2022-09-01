@@ -16,9 +16,9 @@ public class ApplicationContext : DbContext {
         modelBuilder.Entity<Customer>().HasData(
             new {
                 Id = 1,
-                FirstName = "Name",
-                MiddleName = "MiddleName",
-                LastName = "LastName",
+                FirstName = "Maik",
+                MiddleName = "Torn",
+                LastName = "Hastage",
                 SaleId = 1
             });
         modelBuilder.Entity<Payment>().HasData(

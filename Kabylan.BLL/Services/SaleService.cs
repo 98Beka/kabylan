@@ -21,17 +21,18 @@ namespace Kabylan.BLL.Services {
         }
 
         public async Task<SaleDTO> GetAsync(int id) {
-            var Sale = await _database.Sales.Get(id);
+            var Sale = await _database.Sales.GetAsync(id);
             if (Sale == null)
                 throw new ValidationException("Sale not found", "");
             return _mapper.Map<SaleDTO>(Sale);
         }
 
 
-        public  SaleDTO Create() {
+        public async Task<SaleDTO> Create() {
             var customer = new Customer();
-            _database.Customers.Create(customer);
+            await _database.Customers.CreateAsync(customer);
             var apartment = new Apartment();
+            await _database.Apartments.CreateAsync(apartment);
             _database.Save();
             var sale = new Sale() {
                 Customer = customer,
@@ -39,7 +40,7 @@ namespace Kabylan.BLL.Services {
                 PaydMonths = 1,
                 SaleDate = DateTime.Today
             };
-            _database.Sales.Create(sale);
+            await _database.Sales.CreateAsync(sale);
             _database.Save();
             return _mapper.Map<SaleDTO>(sale);
         }
@@ -47,7 +48,7 @@ namespace Kabylan.BLL.Services {
         public async Task EditAsync(SaleDTO sale) {
             if (sale == null)
                 throw new ValidationException("Sale = null", "");
-            var oldSale = await _database.Sales.Get(sale.Id);
+            var oldSale = await _database.Sales.GetAsync(sale.Id);
             _mapper.Map(sale, oldSale.Customer);
             _mapper.Map(sale, oldSale.Apartment);
             _mapper.Map(sale, oldSale);
@@ -58,7 +59,7 @@ namespace Kabylan.BLL.Services {
             var payment = new Payment() { MoneyCount = moneyCount, Date = DateTime.Today };
             if (payment == null)
                 throw new ValidationException("Payment = null", "");
-            var oldSale = await _database.Sales.Get(saleId);
+            var oldSale = await _database.Sales.GetAsync(saleId);
             if (oldSale == null)
                 return;
             int sum = 0;
@@ -74,14 +75,14 @@ namespace Kabylan.BLL.Services {
         public async Task RemovePayment(int paymentId, int saleId) {
             if (paymentId == 0 || saleId == 0)
                 return;
-            var oldSale = await _database.Sales.Get(saleId);
+            var oldSale = await _database.Sales.GetAsync(saleId);
             oldSale.Payments.Remove(oldSale.Payments.FirstOrDefault(p => p.Id == paymentId));
             _database.Save();
         }
         public async Task DeleteAsync(int id) {
             if (id == 0)
                 return;
-            var sale = await _database.Sales.Get(id);
+            var sale = await _database.Sales.GetAsync(id);
             if (sale == null)
                 return;
             _database.Customers.Delete(sale.Customer.Id);
