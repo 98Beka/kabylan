@@ -15,7 +15,10 @@ namespace Kabylan.DAL.Repository {
         }
 
         public async Task<Sale> GetAsync(int id) {
-            return await _db.Sales.FirstOrDefaultAsync(e => e.Id == id);
+            return await _db.Sales
+                .Include(s => s.Apartment)
+                .Include(s => s.Payments)
+                .FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task CreateAsync(Sale Sale) {

@@ -36,3 +36,6 @@ body {
     color: #2f5cef;
     cursor: pointer;
 }
+.table th {
+    text-align: center;
+}

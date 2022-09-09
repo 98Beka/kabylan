@@ -29,18 +29,16 @@ namespace Kabylan.BLL.Services {
 
 
         public async Task<SaleDTO> Create() {
-            var customer = new Customer();
-            await _database.Customers.CreateAsync(customer);
             var apartment = new Apartment();
             await _database.Apartments.CreateAsync(apartment);
             _database.Save();
             var sale = new Sale() {
-                Customer = customer,
                 Apartment = apartment,
-                PaydMonths = 1,
                 SaleDate = DateTime.Today
             };
             await _database.Sales.CreateAsync(sale);
+            var customer = new Customer() { Sale = sale};
+            await _database.Customers.CreateAsync(customer);
             _database.Save();
             return _mapper.Map<SaleDTO>(sale);
         }

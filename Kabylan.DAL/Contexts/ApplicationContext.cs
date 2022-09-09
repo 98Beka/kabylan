@@ -11,8 +11,10 @@ public class ApplicationContext : DbContext {
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
 
         modelBuilder.Entity<Sale>().HasOne(s => s.Apartment);
-        modelBuilder.Entity<Sale>().HasOne(s => s.Customer).WithOne(c => c.Sale).HasForeignKey<Sale>(s => s.CustomerId);
-        modelBuilder.Entity<Sale>().HasMany(s => s.Payments);
+        modelBuilder.Entity<Sale>().HasMany(s => s.Payments).WithOne(p => p.Sale);
+        modelBuilder.Entity<Sale>().HasOne(s => s.Customer).WithOne(c => c.Sale)
+           .HasForeignKey<Customer>(c => c.SaleId);
+
         modelBuilder.Entity<Customer>().HasData(
             new {
                 Id = 1,
@@ -21,6 +23,7 @@ public class ApplicationContext : DbContext {
                 LastName = "Hastage",
                 SaleId = 1
             });
+
         modelBuilder.Entity<Payment>().HasData(
             new {
                 Id = 1,
@@ -29,11 +32,19 @@ public class ApplicationContext : DbContext {
                 MoneyCount = 100000
             });
 
-        modelBuilder.Entity<Sale>().HasData(
-            new Sale {
+        modelBuilder.Entity<Apartment>().HasData(
+            new {
                 Id = 1,
-                CustomerId = 1,
+                Price = 70000,
+                RoomCount = 3,
+                Square = 70
+            });
+
+        modelBuilder.Entity<Sale>().HasData(
+            new {
+                Id = 1,
                 PaydMonths = 1,
+                ApartmentId = 1,
                 SaleDate = DateTime.Today
             });
     }

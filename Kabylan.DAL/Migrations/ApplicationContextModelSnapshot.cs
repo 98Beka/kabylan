@@ -41,6 +41,15 @@ namespace Kabylan.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Apartments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Price = 70000,
+                            RoomCount = 3,
+                            Square = 70
+                        });
                 });
 
             modelBuilder.Entity("Kabylan.DAL.Models.Customer", b =>
@@ -60,7 +69,13 @@ namespace Kabylan.DAL.Migrations
                     b.Property<string>("MiddleName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SaleId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SaleId")
+                        .IsUnique();
 
                     b.ToTable("Customers");
 
@@ -68,9 +83,10 @@ namespace Kabylan.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            FirstName = "Name",
-                            LastName = "LastName",
-                            MiddleName = "MiddleName"
+                            FirstName = "Maik",
+                            LastName = "Hastage",
+                            MiddleName = "Torn",
+                            SaleId = 1
                         });
                 });
 
@@ -101,7 +117,7 @@ namespace Kabylan.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            Date = new DateTime(2022, 9, 1, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2022, 9, 9, 0, 0, 0, 0, DateTimeKind.Local),
                             MoneyCount = 100000,
                             SaleId = 1
                         });
@@ -118,9 +134,6 @@ namespace Kabylan.DAL.Migrations
                     b.Property<int?>("ApartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PaydMonths")
                         .HasColumnType("int");
 
@@ -131,18 +144,15 @@ namespace Kabylan.DAL.Migrations
 
                     b.HasIndex("ApartmentId");
 
-                    b.HasIndex("CustomerId")
-                        .IsUnique();
-
                     b.ToTable("Sales");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CustomerId = 1,
+                            ApartmentId = 1,
                             PaydMonths = 1,
-                            SaleDate = new DateTime(2022, 9, 1, 0, 0, 0, 0, DateTimeKind.Local)
+                            SaleDate = new DateTime(2022, 9, 9, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });
 
@@ -179,6 +189,17 @@ namespace Kabylan.DAL.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Kabylan.DAL.Models.Customer", b =>
+                {
+                    b.HasOne("Kabylan.DAL.Models.Sale", "Sale")
+                        .WithOne("Customer")
+                        .HasForeignKey("Kabylan.DAL.Models.Customer", "SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sale");
+                });
+
             modelBuilder.Entity("Kabylan.DAL.Models.Payment", b =>
                 {
                     b.HasOne("Kabylan.DAL.Models.Sale", "Sale")
@@ -196,24 +217,14 @@ namespace Kabylan.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("ApartmentId");
 
-                    b.HasOne("Kabylan.DAL.Models.Customer", "Customer")
-                        .WithOne("Sale")
-                        .HasForeignKey("Kabylan.DAL.Models.Sale", "CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Apartment");
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Kabylan.DAL.Models.Customer", b =>
-                {
-                    b.Navigation("Sale");
                 });
 
             modelBuilder.Entity("Kabylan.DAL.Models.Sale", b =>
                 {
+                    b.Navigation("Customer")
+                        .IsRequired();
+
                     b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618

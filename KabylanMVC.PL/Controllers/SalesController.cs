@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Kabylan.BLL.DataTransferObjects;
 using Kabylan.BLL.Services;
-using Kabylan.DAL.Interfaces;
 using KabylanMVC.PL.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +16,17 @@ namespace KabylanMVC.PL.Controllers {
 
         public ActionResult Index() {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create() {
+            var res = await _saleService.Create();
+            return View("Edit", res);
+        }
+
+        [HttpPost]
+        public void Edit(SaleDTO sale) {
+
         }
 
         [HttpPost]
@@ -60,16 +70,10 @@ namespace KabylanMVC.PL.Controllers {
             return RedirectToAction(nameof(Index));
         }
 
-
-
-
-
         [HttpGet]
         public async Task<SaleDTO> GetSale(int id) {
-            var customer = await _customerService.GetAsync(id);
-            if (customer.Sale != null)
-                return await _saleService.GetAsync(customer.Sale.Id);
-            return null;
+            var res =  await _saleService.GetAsync(id);
+            return res;
         }
     }
 }
