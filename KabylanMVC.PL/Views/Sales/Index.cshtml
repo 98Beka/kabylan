@@ -94,13 +94,10 @@
                 </div>
                 <div class="row">
                     <div class="col-3">
-                     <input type="text" class="form-control text-center">
-                    </div>
-                    <div class="col-3">
-                     <input type="number" class="form-control text-center">
+                        <input id="paymentValue" type="text" class="form-control text-center" min-1 value=1>
                     </div>
                     <div class="col-4">
-                        <a  class="btn border-primary w-100">Добавить оплату</a>
+                        <div id="addPayment" class="btn border-primary w-100">Добавить оплату</div>
                     </div>
                 </div>
             </div>
@@ -158,31 +155,74 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                                                           return `
-                                                                                   <a id="editCustomer" href="/Sales/EditCustomer?id=` + data + `" class="badge mr-2 p-2 me-2" style="font-size:90%%"><i class="fa fa-edit"></i></a>
-                                                                                   <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteCustomer?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                                                               `
-                                                                       </text>}
+                                                                                                                                       return `
+                                                                                                                                               <a id="editCustomer" href="/Sales/EditCustomer?id=` + data + `" class="badge mr-2 p-2 me-2" style="font-size:90%%"><i class="fa fa-edit"></i></a>
+                                                                                                                                               <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteCustomer?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                                                                                                                           `
+                                                                                                                                   </text>}
                        }
                  }
             ]
         });
+        var customer;
 
+        $('#addPayment').click(function() {
+            var paymentValue = $('#paymentValue').val();
+            $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
+
+                $.get('Sales/GetSale', { id: customer.saleId }, function(res) {
+                    $('#Square').val(res['square']);
+                    $('#RoomCount').val(res['roomCount']);
+                    $('#Price').val(res['price']);
+                    $('#PaydMonths').val(res['payingMonths']);
+
+                    $("#PaymantsTable").DataTable().destroy();
+
+                    $("#PaymantsTable").DataTable({
+                        paginate: false,
+                        filter: false,
+                        info: false,
+                        language: {
+                              emptyTable: "нет платежей"
+                            },
+                        autoWidth: true,
+                        processing: true,
+                        fixedHeader: true,
+                        ordering: false,
+                        searching: false,
+                        lengthChange: false,
+                        data: res['payments'],
+                        columns: [
+                            { data: "date" },
+                            { data: "moneyCount" }
+                        ]
+                    });
+                });
+            });
+        });
 
         $('#SalesTable tbody').on('click', 'tr', function () {
-              $(this).toggleClass("selected");
-            var customer = table.row( this ).data();
+
+            $(this).toggleClass("selected");
+            $('#SalesTable tbody tr').not(this).removeClass('selected');
+
+            customer = table.row( this ).data();
+
             $.get('Sales/GetSale', { id: customer.saleId }, function(res) {
                 $('#Square').val(res['square']);
                 $('#RoomCount').val(res['roomCount']);
                 $('#Price').val(res['price']);
                 $('#PaydMonths').val(res['payingMonths']);
 
+                $("#PaymantsTable").DataTable().destroy();
 
                 $("#PaymantsTable").DataTable({
                     paginate: false,
                     filter: false,
                     info: false,
+                    language: {
+                          emptyTable: "нет платежей"
+                        },
                     autoWidth: true,
                     processing: true,
                     fixedHeader: true,

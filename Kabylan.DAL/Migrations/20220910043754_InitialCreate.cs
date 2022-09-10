@@ -71,7 +71,7 @@ namespace Kabylan.DAL.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SaleId = table.Column<int>(type: "int", nullable: false)
+                    SaleId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -80,8 +80,7 @@ namespace Kabylan.DAL.Migrations
                         name: "FK_Customers_Sales_SaleId",
                         column: x => x.SaleId,
                         principalTable: "Sales",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -113,7 +112,7 @@ namespace Kabylan.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Sales",
                 columns: new[] { "Id", "ApartmentId", "PaydMonths", "SaleDate" },
-                values: new object[] { 1, 1, 1, new DateTime(2022, 9, 9, 0, 0, 0, 0, DateTimeKind.Local) });
+                values: new object[] { 1, 1, 1, new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local) });
 
             migrationBuilder.InsertData(
                 table: "Customers",
@@ -123,13 +122,14 @@ namespace Kabylan.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Payments",
                 columns: new[] { "Id", "Date", "MoneyCount", "SaleId" },
-                values: new object[] { 1, new DateTime(2022, 9, 9, 0, 0, 0, 0, DateTimeKind.Local), 100000, 1 });
+                values: new object[] { 1, new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local), 100000, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_SaleId",
                 table: "Customers",
                 column: "SaleId",
-                unique: true);
+                unique: true,
+                filter: "[SaleId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_SaleId",

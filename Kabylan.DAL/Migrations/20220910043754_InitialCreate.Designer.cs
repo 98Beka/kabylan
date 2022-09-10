@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kabylan.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220908181033_InitialCreate")]
+    [Migration("20220910043754_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,13 +71,14 @@ namespace Kabylan.DAL.Migrations
                     b.Property<string>("MiddleName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SaleId")
+                    b.Property<int?>("SaleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SaleId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[SaleId] IS NOT NULL");
 
                     b.ToTable("Customers");
 
@@ -119,7 +120,7 @@ namespace Kabylan.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            Date = new DateTime(2022, 9, 9, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             MoneyCount = 100000,
                             SaleId = 1
                         });
@@ -154,7 +155,7 @@ namespace Kabylan.DAL.Migrations
                             Id = 1,
                             ApartmentId = 1,
                             PaydMonths = 1,
-                            SaleDate = new DateTime(2022, 9, 9, 0, 0, 0, 0, DateTimeKind.Local)
+                            SaleDate = new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });
 
@@ -195,9 +196,7 @@ namespace Kabylan.DAL.Migrations
                 {
                     b.HasOne("Kabylan.DAL.Models.Sale", "Sale")
                         .WithOne("Customer")
-                        .HasForeignKey("Kabylan.DAL.Models.Customer", "SaleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Kabylan.DAL.Models.Customer", "SaleId");
 
                     b.Navigation("Sale");
                 });
@@ -224,8 +223,7 @@ namespace Kabylan.DAL.Migrations
 
             modelBuilder.Entity("Kabylan.DAL.Models.Sale", b =>
                 {
-                    b.Navigation("Customer")
-                        .IsRequired();
+                    b.Navigation("Customer");
 
                     b.Navigation("Payments");
                 });

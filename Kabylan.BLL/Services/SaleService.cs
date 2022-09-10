@@ -28,39 +28,38 @@ namespace Kabylan.BLL.Services {
         }
 
 
-        public async Task<SaleDTO> Create() {
+        public async Task<SaleDTO> CreateAsync() {
             var apartment = new Apartment();
             await _database.Apartments.CreateAsync(apartment);
-            _database.Save();
             var sale = new Sale() {
                 Apartment = apartment,
                 SaleDate = DateTime.Today
             };
             await _database.Sales.CreateAsync(sale);
-            var customer = new Customer() { Sale = sale};
-            await _database.Customers.CreateAsync(customer);
             _database.Save();
             return _mapper.Map<SaleDTO>(sale);
         }
 
         public async Task EditAsync(SaleDTO sale) {
-            if (sale == null)
+            if (sale == null || sale.Id == 0)
                 throw new ValidationException("Sale = null", "");
             var oldSale = await _database.Sales.GetAsync(sale.Id);
-            _mapper.Map(sale, oldSale.Customer);
+            if (oldSale == null)
+                throw new ValidationException("oldSale = null", "");
             _mapper.Map(sale, oldSale.Apartment);
             _mapper.Map(sale, oldSale);
             _database.Save();
         }
 
-        public async Task AddPayment(int moneyCount, int saleId) {
+        public async Task AddPayment(int saleId, int moneyCount) {
             var payment = new Payment() { MoneyCount = moneyCount, Date = DateTime.Today };
             if (payment == null)
-                throw new ValidationException("Payment = null", "");
+                throw new ValidationException("Payment creating error", "");
             var oldSale = await _database.Sales.GetAsync(saleId);
             if (oldSale == null)
-                return;
+                throw new ValidationException("oldSale = null", "");
             int sum = 0;
+            if(oldSale.Payments != null)
             foreach (var item in oldSale.Payments)
                 sum += item.MoneyCount;
             if (sum + payment.MoneyCount > oldSale.Apartment.Price)

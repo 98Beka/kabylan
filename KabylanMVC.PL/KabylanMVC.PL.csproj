@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Kabylan.BLL\Kabylan.BLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Profiles\" />
-  </ItemGroup>
-
 </Project>

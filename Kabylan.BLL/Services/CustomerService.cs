@@ -28,17 +28,20 @@ namespace Kabylan.BLL.Services {
         }
 
 
-        public async Task<Customer> Create() {
+        public async Task<Customer> CreateAsync() {
             var customer = new Customer();
             await _database.Customers.CreateAsync(customer);
             _database.Save();
             return customer;
         }
 
-        public void Edit(Customer customer) {
+        public async Task Edit(Customer customer) {
             if (customer == null)
                 throw new ValidationException("customer = null", "");
-            _database.Customers.Update(customer);
+            var oldCustomer = await _database.Customers.GetAsync(customer.Id);
+            if (oldCustomer == null)
+                throw new ValidationException("oldCustomer = null", "");
+            _mapper.Map(customer, oldCustomer);
             _database.Save();
         }
 

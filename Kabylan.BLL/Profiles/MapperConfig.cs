@@ -14,8 +14,11 @@ namespace Kabylan.BLL.Profiles
 
             CreateMap<SaleDTO, Sale>();
 
-            CreateMap<SaleDTO, Customer>();
-            CreateMap<SaleDTO, Apartment>();
+            CreateMap<Customer, Customer>();
+            CreateMap<SaleDTO, Customer>()
+               .ForMember(c => c.Id, s => s.Ignore());
+            CreateMap<SaleDTO, Apartment>()
+               .ForMember(a => a.Id, s => s.Ignore());
         }
     }
 }
