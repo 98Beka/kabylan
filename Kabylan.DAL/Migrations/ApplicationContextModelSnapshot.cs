@@ -135,7 +135,7 @@ namespace Kabylan.DAL.Migrations
                     b.Property<int?>("ApartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PaydMonths")
+                    b.Property<int?>("PayingMonths")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SaleDate")
@@ -152,7 +152,6 @@ namespace Kabylan.DAL.Migrations
                         {
                             Id = 1,
                             ApartmentId = 1,
-                            PaydMonths = 1,
                             SaleDate = new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });

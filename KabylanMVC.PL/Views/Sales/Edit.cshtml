@@ -3,18 +3,10 @@
     ViewData["Title"] = "View";
 
 }
-
-<div class="card p-5 m-5" style="max-width: 100vh;">
-    <nav class="m-0">
-        <ol class="breadcrumb pb-0 mb-0  pl-0 " style="background: none">
-            <li class="breadcrumb-item"><a href="/Sales/Index">Продажи</a></li>
-            <li class="breadcrumb-item">Изменить</li>
-        </ol>
-    </nav>
-
     <form id="SaleForm" asp-action="Edit">
             <input asp-for=@Model.Id value=@Model.Id hidden/>
             <input asp-for=@Model.CustomerId value=@Model.CustomerId hidden/>
+            <input type="text" asp-for=@Model.SaleDate value=@Model.SaleDate hidden/>
         <div class="row p-3">
             <!--Upartment data-->
             <div class="col-sm-4">
@@ -55,4 +47,4 @@
             </div>          
         </div>
     </form>
-</div>
+

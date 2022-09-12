@@ -11,6 +11,9 @@ namespace KabylanMVC.PL.Models {
         public int Square { get; set; }
         public int RoomCount { get; set; }
         public int PayingMonths { get; set; }
+        public int TotalPayment { get; set; }
+        public int HaveToPay { get; set; }
+        public int MonthPayment { get; set; }
         public DateTime SaleDate { get; set; }
         public List<Payment> Payments { get; set; }
     }

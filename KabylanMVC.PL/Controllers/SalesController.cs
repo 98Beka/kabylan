@@ -22,15 +22,13 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create() {
+        public async Task<int> Create() {
             var customer = await _customerService.CreateAsync();
             var sale = await _saleService.CreateAsync();
-            if (sale == null || customer == null)
-                return Json(new { message = "Creating error" });
-            var res = _mapper.Map<SaleViewModel>(sale);
-            _mapper.Map(customer, res);
-
-            return View("Edit", res);
+            sale.SaleDate = DateTime.Today;
+            customer.SaleId = sale.Id;
+            await _customerService.Edit(customer);
+            return customer.Id;
         }
 
         [HttpPost]
@@ -97,8 +95,26 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [HttpGet]
-        public async Task<SaleDTO> GetSale(int id) {
-            var res =  await _saleService.GetAsync(id);
+        public async Task<SaleViewModel> GetSale(int id, int customerId) {
+            var sale =  await _saleService.GetAsync(id);
+
+
+            var customer = await _customerService.GetAsync(customerId);
+            var res = _mapper.Map<SaleViewModel>(sale);
+            _mapper.Map(customer, res);
+
+            int totalPayment = 0;
+            foreach (var payment in sale.Payments)
+                totalPayment += payment.MoneyCount;
+            res.TotalPayment = totalPayment;
+            res.HaveToPay = res.Price - totalPayment;
+
+
+            int difMonth = sale.PayingMonths - (Math.Abs((sale.SaleDate.Month - DateTime.Today.Month) + 12 * (sale.SaleDate.Year - DateTime.Today.Year)));
+            if (difMonth <= 0)
+                difMonth = 1;
+
+            res.MonthPayment = res.HaveToPay / difMonth;
             return res;
         }
     }

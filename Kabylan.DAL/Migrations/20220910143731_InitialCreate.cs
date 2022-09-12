@@ -49,7 +49,7 @@ namespace Kabylan.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ApartmentId = table.Column<int>(type: "int", nullable: true),
-                    PaydMonths = table.Column<int>(type: "int", nullable: false),
+                    PayingMonths = table.Column<int>(type: "int", nullable: true),
                     SaleDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -111,8 +111,8 @@ namespace Kabylan.DAL.Migrations
 
             migrationBuilder.InsertData(
                 table: "Sales",
-                columns: new[] { "Id", "ApartmentId", "PaydMonths", "SaleDate" },
-                values: new object[] { 1, 1, 1, new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local) });
+                columns: new[] { "Id", "ApartmentId", "PayingMonths", "SaleDate" },
+                values: new object[] { 1, 1, null, new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local) });
 
             migrationBuilder.InsertData(
                 table: "Customers",

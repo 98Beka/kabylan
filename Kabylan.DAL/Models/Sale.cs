@@ -4,7 +4,7 @@
         public Customer? Customer { get; set; } = null!;
         public Apartment? Apartment { get; set; } = null!;
         public List<Payment>? Payments { get; set; } = new List<Payment>();
-        public int PaydMonths { get; set; }
+        public int? PayingMonths { get; set; }
         public DateTime SaleDate { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kabylan.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220910043754_InitialCreate")]
+    [Migration("20220910143731_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,7 +137,7 @@ namespace Kabylan.DAL.Migrations
                     b.Property<int?>("ApartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PaydMonths")
+                    b.Property<int?>("PayingMonths")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SaleDate")
@@ -154,7 +154,6 @@ namespace Kabylan.DAL.Migrations
                         {
                             Id = 1,
                             ApartmentId = 1,
-                            PaydMonths = 1,
                             SaleDate = new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });

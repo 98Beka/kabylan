@@ -5,7 +5,15 @@
 
 <div class="row gx-3">
     <div class="col col-sm-6">
-        <div class="table-responsive card-body SaleCardsScrolPanel">
+        <div class="card SaleCardsScrolPanel mt-3">
+            <div class="row mb-1 me-2 ">
+                <div class="col-sm-6">
+                    <input type="text" class="form-control border-primary w-100" placeholder="Введите ИФО для фильтрации"/>
+                </div>
+                 <div class="col-sm-6">
+                    <a id="addSaleBtn" class="btn border-primary w-100">Добавить продажу</a>
+                </div>  
+            </div>
             <table id="SalesTable" class="table table-hover bg-white border">
                 <thead>
                     <tr class="table-borderless">
@@ -23,7 +31,6 @@
                     </tr>
                 </thead>
             </table>
-
         </div>
     </div>
 
@@ -33,18 +40,33 @@
                 <form method="post">
                     <div class="row p-3">
 
+                        <!--Customer data-->
+                        <div class="col-sm-4">
+                            <label for="CustomerFirstName" class="form-label mb-0 mt-2">Имя</label>
+                            <input type="text" class="form-control text-center" id="CustomerFirstName">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="CustomerMiddleName" class="form-label mb-0 mt-2">Фамилия</label>
+                            <input type="text" class="form-control text-center" id="CustomerMiddleName">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="CustomerLastName" class="form-label mb-0 mt-2">Отчество</label>
+                            <input type="text" class="form-control text-center" id="CustomerLastName">
+                        </div>
+
+
                         <!--Upartment data-->
                         <div class="col-sm-4">
                             <label for="Square" class="form-label mb-0 mt-2">площадь</label>
-                            <input type="number" class="form-control text-center" id="Square" readonly>
+                            <input type="number" class="form-control text-center" id="Square">
                         </div>
                         <div class="col-sm-4">
                             <label for="RoomCount" class="form-label mb-0 mt-2">к-во комнат</label>
-                            <input type="number" class="form-control text-center" id="RoomCount" readonly>
+                            <input type="number" class="form-control text-center" id="RoomCount">
                         </div>
                         <div class="col-sm-4">
                             <label for="Price" class="form-label mb-0 mt-2">ценна $</label>
-                            <input type="number" class="form-control text-center" id="Price" readonly>
+                            <input type="number" class="form-control text-center" id="Price">
                         </div>
 
                         <!--Payment data-->
@@ -55,7 +77,7 @@
                         
                         <div class="col-sm-4">
                             <label for="payd" class="form-label">оплата/месяц</label>
-                            <input type="text" class="form-control text-center" id="payd" readonly>
+                            <input type="text" class="form-control text-center" id="MonthPayment" readonly>
                         </div>
                         <div class="col-sm-4">
                             <label for="payd" class="form-label">оплачено</label>
@@ -64,11 +86,7 @@
                          <div class="col-sm-4">
                              <label for="havePayd" class="form-label">ост-сь оплатить</label>
                              <input type="text" class="form-control text-center" id="havePayd" readonly>
-                         </div>
-
-                        <div class="col-sm-8 my-4 py-2 my-4">
-                            <a href="/Sales/Create" class="btn border-primary w-100">Добавить продажу</a>
-                        </div>          
+                         </div> 
                     </div>
                 </form>
             </div>
@@ -94,7 +112,7 @@
                 </div>
                 <div class="row">
                     <div class="col-3">
-                        <input id="paymentValue" type="text" class="form-control text-center" min-1 value=1>
+                        <input id="paymentValue" type="text" class="form-control text-center border-primary" min-1>
                     </div>
                     <div class="col-4">
                         <div id="addPayment" class="btn border-primary w-100">Добавить оплату</div>
@@ -136,7 +154,7 @@
             searching: false,
             lengthChange: false,
             pageLength: 50,
-            scrollY:        "86vh",
+            scrollY:        "82vh",
             
             ajax: {
                 url: "/Sales/LoadTable",
@@ -155,11 +173,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                                                                                                                       return `
-                                                                                                                                               <a id="editCustomer" href="/Sales/EditCustomer?id=` + data + `" class="badge mr-2 p-2 me-2" style="font-size:90%%"><i class="fa fa-edit"></i></a>
-                                                                                                                                               <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteCustomer?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                                                                                                                           `
-                                                                                                                                   </text>}
+                                return `
+                                        <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteCustomer?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                    `
+                            </text>}
                        }
                  }
             ]
@@ -169,35 +186,15 @@
         $('#addPayment').click(function() {
             var paymentValue = $('#paymentValue').val();
             $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
+                GetSale();
+            });
+        });
 
-                $.get('Sales/GetSale', { id: customer.saleId }, function(res) {
-                    $('#Square').val(res['square']);
-                    $('#RoomCount').val(res['roomCount']);
-                    $('#Price').val(res['price']);
-                    $('#PaydMonths').val(res['payingMonths']);
+        $('#addSaleBtn').click(function() {
+            $.get('Sales/Create', function(res) {
+                $('#SalesTable tbody').children()
 
-                    $("#PaymantsTable").DataTable().destroy();
-
-                    $("#PaymantsTable").DataTable({
-                        paginate: false,
-                        filter: false,
-                        info: false,
-                        language: {
-                              emptyTable: "нет платежей"
-                            },
-                        autoWidth: true,
-                        processing: true,
-                        fixedHeader: true,
-                        ordering: false,
-                        searching: false,
-                        lengthChange: false,
-                        data: res['payments'],
-                        columns: [
-                            { data: "date" },
-                            { data: "moneyCount" }
-                        ]
-                    });
-                });
+                GetSale();
             });
         });
 
@@ -207,12 +204,24 @@
             $('#SalesTable tbody tr').not(this).removeClass('selected');
 
             customer = table.row( this ).data();
+            GetSale();
+        });
 
-            $.get('Sales/GetSale', { id: customer.saleId }, function(res) {
+        function GetSale() {
+            $.get('Sales/GetSale', { id: customer.saleId, customerId: customer.id}, function(res) {
                 $('#Square').val(res['square']);
                 $('#RoomCount').val(res['roomCount']);
                 $('#Price').val(res['price']);
                 $('#PaydMonths').val(res['payingMonths']);
+                $('#CustomerFirstName').val(res['customerFirstName']);
+                $('#CustomerMiddleName').val(res['customerMiddleName']);
+                $('#CustomerLastName').val(res['customerLastName']);
+                $('#PaydMonths').val(res['payingMonths']);
+                $('#MonthPayment').val(res['monthPayment']);
+                $('#havePayd').val(res['haveToPay']);
+                $('#payd').val(res['totalPayment']);
+
+
 
                 $("#PaymantsTable").DataTable().destroy();
 
@@ -220,9 +229,7 @@
                     paginate: false,
                     filter: false,
                     info: false,
-                    language: {
-                          emptyTable: "нет платежей"
-                        },
+                    language: {emptyTable: "нет платежей" },
                     autoWidth: true,
                     processing: true,
                     fixedHeader: true,
@@ -236,7 +243,8 @@
                     ]
                 });
             });
-        });
+        }
+
     });
  </script>
 }

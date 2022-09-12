@@ -29,7 +29,7 @@ public class ApplicationContext : DbContext {
                 Id = 1,
                 SaleId = 1,
                 Date = DateTime.Today,
-                MoneyCount = 100000
+                MoneyCount = 100
             });
 
         modelBuilder.Entity<Apartment>().HasData(
