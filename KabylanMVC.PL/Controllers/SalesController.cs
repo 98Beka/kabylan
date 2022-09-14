@@ -4,6 +4,7 @@ using Kabylan.BLL.Services;
 using Kabylan.DAL.Models;
 using KabylanMVC.PL.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace KabylanMVC.PL.Controllers {
@@ -27,14 +28,20 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit([Bind]SaleViewModel sale) {
-            await _saleService.EditAsync(_mapper.Map<SaleDTO>(sale));
+        public async Task<IActionResult> Edit(SaleDTO sale) {
+            if (sale.Id == 0)
+                return BadRequest();
+            sale.CustomerFirstName = sale.CustomerFirstName ?? string.Empty;
+            sale.CustomerMiddleName = sale.CustomerMiddleName ?? string.Empty;
+            sale.CustomerLastName = sale.CustomerLastName ?? string.Empty;
+            await _saleService.EditAsync(sale);
             return RedirectToAction(nameof(Index), "Sales");
         }
 
         [HttpGet]
         public async Task<IActionResult> AddPaymnet(int id, int value) {
-
+            if (id == 0 || value <= 0)
+                return BadRequest();
             await _saleService.AddPayment(id, value);
             return Ok();
         }

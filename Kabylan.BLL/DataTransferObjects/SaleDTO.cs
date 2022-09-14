@@ -3,9 +3,9 @@
 namespace Kabylan.BLL.DataTransferObjects {
     public class SaleDTO {
         public int Id { get; set; }
-        public string CustomerFirstName { get; set; }
-        public string CustomerMiddleName { get; set; }
-        public string CustomerLastName { get; set; }
+        public string CustomerFirstName { get; set; } = String.Empty;
+        public string CustomerMiddleName { get; set; } = String.Empty;
+        public string CustomerLastName { get; set; } = String.Empty;
         public int Price { get; set; }
         public int Square { get; set; }
         public int RoomCount { get; set; }

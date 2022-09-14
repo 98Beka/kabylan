@@ -37,36 +37,36 @@
     <div class="col col-sm-6">
             <div class="my-3 p-3 text-center border border-3 overflow-auto CastomersPanel">
 
-                <form method="post">
+                <form id="SaleForm">
                     <div class="row p-3">
-
+                        <input id="SaleId" name="Id" hidden/>
                         <!--Customer data-->
                         <div class="col-sm-4">
                             <label for="CustomerFirstName" class="form-label mb-0 mt-2">Имя</label>
-                            <input type="text" class="form-control text-center" id="CustomerFirstName">
+                            <input type="text" class="form-control text-center" name="CustomerFirstName" id="CustomerFirstName">
                         </div>
                         <div class="col-sm-4">
                             <label for="CustomerMiddleName" class="form-label mb-0 mt-2">Фамилия</label>
-                            <input type="text" class="form-control text-center" id="CustomerMiddleName">
+                            <input type="text" class="form-control text-center" name="CustomerMiddleName" id="CustomerMiddleName">
                         </div>
                         <div class="col-sm-4">
                             <label for="CustomerLastName" class="form-label mb-0 mt-2">Отчество</label>
-                            <input type="text" class="form-control text-center" id="CustomerLastName">
+                            <input type="text" class="form-control text-center" name="CustomerLastName" id="CustomerLastName">
                         </div>
 
 
                         <!--Upartment data-->
                         <div class="col-sm-4">
                             <label for="Square" class="form-label mb-0 mt-2">площадь</label>
-                            <input type="number" class="form-control text-center" id="Square">
+                            <input type="number" class="form-control text-center" name="Square" id="Square">
                         </div>
                         <div class="col-sm-4">
                             <label for="RoomCount" class="form-label mb-0 mt-2">к-во комнат</label>
-                            <input type="number" class="form-control text-center" id="RoomCount">
+                            <input type="number" class="form-control text-center" name="RoomCount" id="RoomCount">
                         </div>
                         <div class="col-sm-4">
                             <label for="Price" class="form-label mb-0 mt-2">ценна $</label>
-                            <input type="number" class="form-control text-center" id="Price">
+                            <input type="number" class="form-control text-center" name="Price" id="Price">
                         </div>
 
                         <!--Payment data-->
@@ -147,6 +147,46 @@
     };
 
     $(document).ready(function() {
+         var customer;
+
+        function GetSale() {
+            $.get('Sales/GetSale', { id: customer.saleId, customerId: customer.id }, function(res) {
+                $('#Square').val(res['square']);
+                $('#SaleId').val(res['id']);
+                $('#RoomCount').val(res['roomCount']);
+                $('#Price').val(res['price']);
+                $('#PaydMonths').val(res['payingMonths']);
+                $('#CustomerFirstName').val(res['customerFirstName']);
+                $('#CustomerMiddleName').val(res['customerMiddleName']);
+                $('#CustomerLastName').val(res['customerLastName']);
+                $('#PaydMonths').val(res['payingMonths']);
+                $('#MonthPayment').val(res['monthPayment']);
+                $('#havePayd').val(res['haveToPay']);
+                $('#payd').val(res['totalPayment']);
+
+
+
+                $("#PaymantsTable").DataTable().destroy();
+
+                $("#PaymantsTable").DataTable({
+                    paginate: false,
+                    filter: false,
+                    info: false,
+                    language: { emptyTable: "нет платежей" },
+                    autoWidth: true,
+                    processing: true,
+                    fixedHeader: true,
+                    ordering: false,
+                    searching: false,
+                    lengthChange: false,
+                    data: res['payments'],
+                    columns: [
+                        { data: "date" },
+                        { data: "moneyCount" }
+                    ]
+                });
+            });
+        }
         let table = $("#SalesTable").DataTable({
             autoWidth: true,
             processing: true,
@@ -177,15 +217,14 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                    return `
-                                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                        `
-                                </text>}
+                                return `
+                                        <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                    `
+                            </text>}
                        }
                  }
             ]
         });
-        var customer;
 
         setTimeout(function() {
              $('#SalesTable>tbody>tr:first-child').toggleClass("selected");
@@ -229,43 +268,28 @@
             GetSale();
         });
 
-        function GetSale() {
-            $.get('Sales/GetSale', { id: customer.saleId, customerId: customer.id}, function(res) {
-                $('#Square').val(res['square']);
-                $('#RoomCount').val(res['roomCount']);
-                $('#Price').val(res['price']);
-                $('#PaydMonths').val(res['payingMonths']);
-                $('#CustomerFirstName').val(res['customerFirstName']);
-                $('#CustomerMiddleName').val(res['customerMiddleName']);
-                $('#CustomerLastName').val(res['customerLastName']);
-                $('#PaydMonths').val(res['payingMonths']);
-                $('#MonthPayment').val(res['monthPayment']);
-                $('#havePayd').val(res['haveToPay']);
-                $('#payd').val(res['totalPayment']);
+        $("#SaleForm").submit(function(event){
+            event.preventDefault();
+ 
+            var formValues= $(this).serialize();
 
-
-
-                $("#PaymantsTable").DataTable().destroy();
-
-                $("#PaymantsTable").DataTable({
-                    paginate: false,
-                    filter: false,
-                    info: false,
-                    language: {emptyTable: "нет платежей" },
-                    autoWidth: true,
-                    processing: true,
-                    fixedHeader: true,
-                    ordering: false,
-                    searching: false,
-                    lengthChange: false,
-                    data: res['payments'],
-                    columns: [
-                        { data: "date" },
-                        { data: "moneyCount" }
-                    ]
-                });
+            $.ajax({
+                async: false,
+                type: "Post",
+                url: "Sales/Edit",
+                data: formValues,
+                success: function(data) {
+                    table.ajax.reload();
+                    $('#SalesTable').on( 'xhr.dt', function(e, settings, json, xhr){
+                        setTimeout(function() {
+                            $('#SalesTable>tbody>tr:first-child').toggleClass("selected");
+                            customer = table.row(0).data();
+                        GetSale();
+                    }, 1000);
+                    });
+                }
             });
-        }
+        });
 
     });
  </script>
