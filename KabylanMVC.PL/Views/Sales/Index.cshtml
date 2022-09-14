@@ -87,6 +87,9 @@
                              <label for="havePayd" class="form-label">ост-сь оплатить</label>
                              <input type="text" class="form-control text-center" id="havePayd" readonly>
                          </div> 
+                         <div class="col-sm-4">
+                             <button type="submit" class="btn border border-primary">Сохранить изменения</button>
+                         </div>
                     </div>
                 </form>
             </div>
@@ -159,6 +162,7 @@
             ajax: {
                 url: "/Sales/LoadTable",
                 type: "POST",
+                async: false,
                 contentType: "application/json",
                 dataType: "json",
                 data: function(data) {
@@ -173,15 +177,21 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                return `
-                                        <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteCustomer?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                    `
-                            </text>}
+                                    return `
+                                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                        `
+                                </text>}
                        }
                  }
             ]
         });
         var customer;
+
+        setTimeout(function() {
+             $('#SalesTable>tbody>tr:first-child').toggleClass("selected");
+             customer = table.row(0).data();
+            GetSale();
+        }, 1000);
 
         $('#addPayment').click(function() {
             var paymentValue = $('#paymentValue').val();
@@ -190,12 +200,24 @@
             });
         });
 
+        
         $('#addSaleBtn').click(function() {
-            $.get('Sales/Create', function(res) {
-                $('#SalesTable tbody').children()
-
-                GetSale();
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: "Sales/Create",
+                success: function(data) {
+                    table.ajax.reload();
+                    $('#SalesTable').on( 'xhr.dt', function(e, settings, json, xhr){
+                        setTimeout(function() {
+                            $('#SalesTable>tbody>tr:first-child').toggleClass("selected");
+                            customer = table.row(0).data();
+                        GetSale();
+                    }, 1000);
+                    });
+                }
             });
+
         });
 
         $('#SalesTable tbody').on('click', 'tr', function () {

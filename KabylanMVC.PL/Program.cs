@@ -1,8 +1,7 @@
 using AutoMapper;
 using Kabylan.BLL.Services;
-using Kabylan.DAL.Interfaces;
-using Kabylan.DAL.Repository;
 using KabylanMVC.PL.Profiles;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages()
@@ -17,9 +16,9 @@ builder.Services.AddSingleton<IMapper, IMapper>(
     s => new MapperConfiguration(c => {
         c.AddProfile<MapperConfig>();
     }).CreateMapper()
-    );
-builder.Services.AddSingleton<CustomerService, CustomerService>(
-    s => new CustomerService(connectionStr));
+);
+builder.Services.AddControllers().AddJsonOptions(x =>
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 
 var app = builder.Build();

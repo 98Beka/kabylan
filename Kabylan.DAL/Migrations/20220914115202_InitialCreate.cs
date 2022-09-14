@@ -10,18 +10,17 @@ namespace Kabylan.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Apartments",
+                name: "Sales",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Square = table.Column<int>(type: "int", nullable: false),
-                    RoomCount = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<int>(type: "int", nullable: false)
+                    PayingMonths = table.Column<int>(type: "int", nullable: true),
+                    SaleDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Apartments", x => x.Id);
+                    table.PrimaryKey("PK_Sales", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,23 +42,25 @@ namespace Kabylan.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sales",
+                name: "Apartments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ApartmentId = table.Column<int>(type: "int", nullable: true),
-                    PayingMonths = table.Column<int>(type: "int", nullable: true),
-                    SaleDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Square = table.Column<int>(type: "int", nullable: false),
+                    RoomCount = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    SaleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sales", x => x.Id);
+                    table.PrimaryKey("PK_Apartments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sales_Apartments_ApartmentId",
-                        column: x => x.ApartmentId,
-                        principalTable: "Apartments",
-                        principalColumn: "Id");
+                        name: "FK_Apartments_Sales_SaleId",
+                        column: x => x.SaleId,
+                        principalTable: "Sales",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,10 +69,10 @@ namespace Kabylan.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SaleId = table.Column<int>(type: "int", nullable: true)
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SaleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,7 +81,8 @@ namespace Kabylan.DAL.Migrations
                         name: "FK_Customers_Sales_SaleId",
                         column: x => x.SaleId,
                         principalTable: "Sales",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -105,14 +107,14 @@ namespace Kabylan.DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Apartments",
-                columns: new[] { "Id", "Price", "RoomCount", "Square" },
-                values: new object[] { 1, 70000, 3, 70 });
+                table: "Sales",
+                columns: new[] { "Id", "PayingMonths", "SaleDate" },
+                values: new object[] { 1, null, new DateTime(2022, 9, 14, 0, 0, 0, 0, DateTimeKind.Local) });
 
             migrationBuilder.InsertData(
-                table: "Sales",
-                columns: new[] { "Id", "ApartmentId", "PayingMonths", "SaleDate" },
-                values: new object[] { 1, 1, null, new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local) });
+                table: "Apartments",
+                columns: new[] { "Id", "Price", "RoomCount", "SaleId", "Square" },
+                values: new object[] { 1, 70000, 3, 1, 70 });
 
             migrationBuilder.InsertData(
                 table: "Customers",
@@ -122,28 +124,31 @@ namespace Kabylan.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Payments",
                 columns: new[] { "Id", "Date", "MoneyCount", "SaleId" },
-                values: new object[] { 1, new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local), 100000, 1 });
+                values: new object[] { 1, new DateTime(2022, 9, 14, 0, 0, 0, 0, DateTimeKind.Local), 100, 1 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Apartments_SaleId",
+                table: "Apartments",
+                column: "SaleId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_SaleId",
                 table: "Customers",
                 column: "SaleId",
-                unique: true,
-                filter: "[SaleId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_SaleId",
                 table: "Payments",
                 column: "SaleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sales_ApartmentId",
-                table: "Sales",
-                column: "ApartmentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Apartments");
+
             migrationBuilder.DropTable(
                 name: "Customers");
 
@@ -155,9 +160,6 @@ namespace Kabylan.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sales");
-
-            migrationBuilder.DropTable(
-                name: "Apartments");
         }
     }
 }

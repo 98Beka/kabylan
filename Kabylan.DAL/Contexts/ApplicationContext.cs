@@ -10,7 +10,7 @@ public class ApplicationContext : DbContext {
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
 
-        modelBuilder.Entity<Sale>().HasOne(s => s.Apartment);
+        modelBuilder.Entity<Sale>().HasOne(s => s.Apartment).WithOne(a => a.Sale);
         modelBuilder.Entity<Sale>().HasMany(s => s.Payments).WithOne(p => p.Sale);
         modelBuilder.Entity<Sale>().HasOne(s => s.Customer).WithOne(c => c.Sale)
            .HasForeignKey<Customer>(c => c.SaleId);
@@ -37,7 +37,8 @@ public class ApplicationContext : DbContext {
                 Id = 1,
                 Price = 70000,
                 RoomCount = 3,
-                Square = 70
+                Square = 70,
+                SaleId = 1
             });
 
         modelBuilder.Entity<Sale>().HasData(

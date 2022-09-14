@@ -21,18 +21,17 @@ namespace Kabylan.BLL.Services {
         }
 
         public async Task<SaleDTO> GetAsync(int id) {
-            var Sale = await _database.Sales.GetAsync(id);
-            if (Sale == null)
+            var sale = await _database.Sales.GetAsync(id);
+            if (sale == null)
                 throw new ValidationException("Sale not found", "");
-            return _mapper.Map<SaleDTO>(Sale);
+            return _mapper.Map<SaleDTO>(sale);
         }
 
 
         public async Task<SaleDTO> CreateAsync() {
-            var apartment = new Apartment();
-            await _database.Apartments.CreateAsync(apartment);
             var sale = new Sale() {
-                Apartment = apartment,
+                Apartment = new Apartment(),
+                Customer = new Customer(),
                 SaleDate = DateTime.Today
             };
             await _database.Sales.CreateAsync(sale);
@@ -47,6 +46,7 @@ namespace Kabylan.BLL.Services {
             if (oldSale == null)
                 throw new ValidationException("oldSale = null", "");
             _mapper.Map(sale, oldSale.Apartment);
+            _mapper.Map(sale, oldSale.Customer);
             _mapper.Map(sale, oldSale);
             _database.Save();
         }
@@ -73,17 +73,23 @@ namespace Kabylan.BLL.Services {
             if (paymentId == 0 || saleId == 0)
                 return;
             var oldSale = await _database.Sales.GetAsync(saleId);
-            oldSale.Payments.Remove(oldSale.Payments.FirstOrDefault(p => p.Id == paymentId));
+            if (oldSale == null)
+                throw new ValidationException("oldSale = null", "");
+            oldSale.Payments?.Remove(oldSale.Payments?.FirstOrDefault(p => p.Id == paymentId));
             _database.Save();
         }
         public async Task DeleteAsync(int id) {
             if (id == 0)
-                return;
-            var sale = await _database.Sales.GetAsync(id);
-            if (sale == null)
-                return;
-            _database.Customers.Delete(sale.Customer.Id);
+                throw new ValidationException("oldSale = null", "");
+            var oldSale = await _database.Sales.GetAsync(id);
+            if (oldSale == null)
+                throw new ValidationException("oldSale = null", "");
+            _database.Sales.Delete(oldSale.Id);
             _database.Save();
+        }
+
+        public IQueryable<Customer> GetAllCustomers() {
+            return _database.Customers.GetAll();
         }
     }
 }

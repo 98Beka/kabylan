@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kabylan.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220910143731_InitialCreate")]
+    [Migration("20220914115202_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,10 +37,16 @@ namespace Kabylan.DAL.Migrations
                     b.Property<int>("RoomCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("SaleId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Square")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SaleId")
+                        .IsUnique();
 
                     b.ToTable("Apartments");
 
@@ -50,6 +56,7 @@ namespace Kabylan.DAL.Migrations
                             Id = 1,
                             Price = 70000,
                             RoomCount = 3,
+                            SaleId = 1,
                             Square = 70
                         });
                 });
@@ -63,22 +70,24 @@ namespace Kabylan.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SaleId")
+                    b.Property<int>("SaleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SaleId")
-                        .IsUnique()
-                        .HasFilter("[SaleId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Customers");
 
@@ -120,8 +129,8 @@ namespace Kabylan.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            Date = new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local),
-                            MoneyCount = 100000,
+                            Date = new DateTime(2022, 9, 14, 0, 0, 0, 0, DateTimeKind.Local),
+                            MoneyCount = 100,
                             SaleId = 1
                         });
                 });
@@ -134,9 +143,6 @@ namespace Kabylan.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("ApartmentId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("PayingMonths")
                         .HasColumnType("int");
 
@@ -145,16 +151,13 @@ namespace Kabylan.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApartmentId");
-
                     b.ToTable("Sales");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            ApartmentId = 1,
-                            SaleDate = new DateTime(2022, 9, 10, 0, 0, 0, 0, DateTimeKind.Local)
+                            SaleDate = new DateTime(2022, 9, 14, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });
 
@@ -191,11 +194,24 @@ namespace Kabylan.DAL.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Kabylan.DAL.Models.Apartment", b =>
+                {
+                    b.HasOne("Kabylan.DAL.Models.Sale", "Sale")
+                        .WithOne("Apartment")
+                        .HasForeignKey("Kabylan.DAL.Models.Apartment", "SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sale");
+                });
+
             modelBuilder.Entity("Kabylan.DAL.Models.Customer", b =>
                 {
                     b.HasOne("Kabylan.DAL.Models.Sale", "Sale")
                         .WithOne("Customer")
-                        .HasForeignKey("Kabylan.DAL.Models.Customer", "SaleId");
+                        .HasForeignKey("Kabylan.DAL.Models.Customer", "SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Sale");
                 });
@@ -213,16 +229,11 @@ namespace Kabylan.DAL.Migrations
 
             modelBuilder.Entity("Kabylan.DAL.Models.Sale", b =>
                 {
-                    b.HasOne("Kabylan.DAL.Models.Apartment", "Apartment")
-                        .WithMany()
-                        .HasForeignKey("ApartmentId");
+                    b.Navigation("Apartment")
+                        .IsRequired();
 
-                    b.Navigation("Apartment");
-                });
-
-            modelBuilder.Entity("Kabylan.DAL.Models.Sale", b =>
-                {
-                    b.Navigation("Customer");
+                    b.Navigation("Customer")
+                        .IsRequired();
 
                     b.Navigation("Payments");
                 });

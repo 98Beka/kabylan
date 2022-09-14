@@ -18,6 +18,7 @@ namespace Kabylan.DAL.Repository {
             return await _db.Sales
                 .Include(s => s.Apartment)
                 .Include(s => s.Payments)
+                .Include(s => s.Customer)
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 

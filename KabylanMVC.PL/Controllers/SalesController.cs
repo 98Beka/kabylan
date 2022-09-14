@@ -9,11 +9,9 @@ using System.Net;
 namespace KabylanMVC.PL.Controllers {
     public class SalesController : Controller {
         private readonly SaleService _saleService;
-        private readonly CustomerService _customerService;
         private readonly IMapper _mapper;
-        public SalesController(SaleService saleService, CustomerService customerService, IMapper mapper) {
+        public SalesController(SaleService saleService, IMapper mapper) {
             _saleService = saleService;
-            _customerService = customerService;
             _mapper = mapper;
         }
 
@@ -22,21 +20,15 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [HttpGet]
-        public async Task<int> Create() {
-            var customer = await _customerService.CreateAsync();
+        public async Task<IActionResult> Create() {
             var sale = await _saleService.CreateAsync();
             sale.SaleDate = DateTime.Today;
-            customer.SaleId = sale.Id;
-            await _customerService.Edit(customer);
-            return customer.Id;
+            return RedirectToAction(nameof(Index), "Sales");
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit([Bind]SaleViewModel sale) {
             await _saleService.EditAsync(_mapper.Map<SaleDTO>(sale));
-            var customer = _mapper.Map<Customer>(sale);
-            customer.SaleId = sale.Id;
-            await _customerService.Edit(customer);
             return RedirectToAction(nameof(Index), "Sales");
         }
 
@@ -58,39 +50,47 @@ namespace KabylanMVC.PL.Controllers {
             int dtdraw = dtParameters.draw;
             int startRec = dtParameters.start;
             int pageSize = dtParameters.length;
-            var totalResultsCount = _customerService.GetAll().Count();
+            try {
+                var totalResultsCount = _saleService.GetAllCustomers().Count();
+                var _data = _saleService.GetAllCustomers()
+                    .Skip(startRec)
+                    .Take(pageSize)
+                    .OrderByDescending(s => s.Id)
+                    .ToList();
 
-            var _data = _customerService.GetAll()
-                .Skip(startRec)
-                .Take(pageSize)
-                .ToList();
-        
-            return Json(new {
-                draw = dtdraw,
-                recordsTotal = totalResultsCount,
-                recordsFiltered = totalResultsCount,
-                data = _data
-            });
+                return Json(new {
+                    draw = dtdraw,
+                    recordsTotal = totalResultsCount,
+                    recordsFiltered = totalResultsCount,
+                    data = _data
+                });
+            } catch (Exception ex) {
+                Console.WriteLine(ex);
+                return BadRequest();
+            }
         }
 
-        [Route("Sales/DeleteCustomer")]
-        public async Task<IActionResult> DeleteCustomer(int id) {
+        [Route("Sales/DeleteSale")]
+        public async Task<IActionResult> DeleteSale(int id) {
             if (id == 0) {
                 return NotFound();
             }
-            var customer = await _customerService.GetAsync(id);
+            var sale = await _saleService.GetAsync(id);
 
-            if (customer == null) {
+            if (sale == null) {
                 return NotFound();
             }
 
-            return View(customer);
+            return View(sale);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id) {
-            _customerService.Delete((int)id);
+            var sale = await _saleService.GetAsync((int)id);
+            if (sale != null) 
+                await _saleService.DeleteAsync(sale.Id);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -98,10 +98,7 @@ namespace KabylanMVC.PL.Controllers {
         public async Task<SaleViewModel> GetSale(int id, int customerId) {
             var sale =  await _saleService.GetAsync(id);
 
-
-            var customer = await _customerService.GetAsync(customerId);
             var res = _mapper.Map<SaleViewModel>(sale);
-            _mapper.Map(customer, res);
 
             int totalPayment = 0;
             foreach (var payment in sale.Payments)
