@@ -4,18 +4,29 @@ using Kabylan.DAL.Models;
 
 namespace Kabylan.DAL.Repository {
     public class EFUnitOfWork : IUnitOfWork {
-        private readonly ApplicationContext _db;
+
         private UserRepository _userRepository;
         private SaleRepository _saleRepository;
         private PaymentRepository _paymentRepository;
         private CustomerRepository _customerRepository;
         private ApartmentRepository _apartmentRepository;
+        private readonly DbContextOptions<ApplicationContext> _dbContextOptions;
+        public delegate int SaveDelegate();
+        public event SaveDelegate SaveEvent;
+
+        private ApplicationContext _db {
+            get {
+               var tmp =  new ApplicationContext(_dbContextOptions);
+                SaveEvent += tmp.SaveChanges;
+                return tmp;
+            }
+        }
 
         public EFUnitOfWork(string connectionString) {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
             optionsBuilder.UseSqlServer(connectionString);
 
-            _db = new ApplicationContext(optionsBuilder.Options);
+            _dbContextOptions = optionsBuilder.Options;
         }
 
         public IRepository<User> Users {
@@ -59,7 +70,7 @@ namespace Kabylan.DAL.Repository {
         } 
 
         public void Save() {
-            _db.SaveChanges();
+            SaveEvent?.Invoke();
         }
 
         private bool disposed = false;
