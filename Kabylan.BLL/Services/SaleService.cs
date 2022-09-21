@@ -46,7 +46,7 @@ namespace Kabylan.BLL.Services {
             if (oldSale == null)
                 throw new ValidationException("oldSale = null", "");
             _mapper.Map(sale, oldSale.Apartment);
-            _mapper.Map(sale, oldSale.Customer);
+            _mapper.Map(sale, oldSale.Customer);;
             _database.Save();
         }
 

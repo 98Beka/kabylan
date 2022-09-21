@@ -63,7 +63,7 @@
 
                         <!--Payment data-->
                         <div class="col-sm-4">
-                            <label for="PaydMonths" class="form-label mb-0 mt-2">К-во месяцев для рассрочки</label>
+                            <label for="PaydMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
                             <input type="number" class="form-control text-center" id="PaydMonths">
                         </div>
                          <div class="col-sm-8">
@@ -80,8 +80,8 @@
                             <input type="text" class="form-control text-center" id="payd" readonly>
                          </div>
                          <div class="col-sm-4">
-                             <label for="havePayd" class="form-label">ост-сь оплатить</label>
-                             <input type="text" class="form-control text-center" id="havePayd" readonly>
+                             <label for="haveToPay" class="form-label">ост-сь оплатить</label>
+                             <input type="text" class="form-control text-center" id="haveToPay" readonly>
                          </div> 
                     </div>
                 </form>
@@ -175,10 +175,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                                                                                                                                                                                    return `
-                                                                                                                                                                                                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                                                                                                                                                                                        `
-                                                                                                                                                                                                </text>}
+                    return `
+                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                        `
+                </text>}
                        }
                  }
             ]
@@ -197,7 +197,7 @@
                 $('#CustomerLastName').val(res['customerLastName']);
                 $('#PaydMonths').val(res['payingMonths']);
                 $('#MonthPayment').val(res['monthPayment'] + '$');
-                $('#havePayd').val(res['haveToPay'] + ' $');
+                $('#haveToPay').val(res['haveToPay'] + ' $');
                 $('#payd').val(res['totalPayment'] + ' $');
 
 
@@ -231,10 +231,26 @@
 
         $('#addPayment').click(function() {
             var paymentValue = $('#paymentValue').val();
-            $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
-                GetSale();
-                $('#paymentValue').val('')
-            });
+
+            if (paymentValue <= 0) {
+                $('#paymentValue').css({ 'background-color': '#fb5656' });
+                setTimeout(function() {
+                    $('#paymentValue').css({'background-color': ''});
+                }, 1000);
+                return;
+            }
+            if ($('#haveToPay').val() >= paymentValue) {
+                $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
+                    GetSale();
+                    $('#paymentValue').val('')
+                });
+            }
+            else{
+                $('#haveToPay').css({ 'background-color': '#fb5656' });
+                setTimeout(function() {
+                    $('#haveToPay').css({'background-color': ''});
+                }, 1000);
+            }
         });
 
         

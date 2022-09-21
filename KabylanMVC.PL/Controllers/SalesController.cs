@@ -59,6 +59,7 @@ namespace KabylanMVC.PL.Controllers {
             int pageSize = dtParameters.length;
             try {
                 var totalResultsCount = _saleService.GetAllCustomers().Count();
+                var _d = _saleService.GetAllCustomers().ToList();
                 var _data = _saleService.GetAllCustomers()
                     .Skip(startRec)
                     .Take(pageSize)
