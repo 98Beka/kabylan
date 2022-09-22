@@ -9,20 +9,20 @@ namespace Kabylan.DAL.Repository {
             _db = context;
         }
 
-        public IEnumerable<Customer> GetAll() {
+        public IQueryable<Customer> GetAll() {
             return _db.Customers;
         }
 
-        public async Task<Customer> Get(int id) {
+        public async Task<Customer> GetAsync(int id) {
             return await _db.Customers.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task Create(Customer Customer) {
-            await _db.Customers.AddAsync(Customer);
+        public async Task CreateAsync(Customer customer) {
+            await _db.Customers.AddAsync(customer);
         }
 
-        public void Update(Customer Customer) {
-            _db.Entry(Customer).State = EntityState.Modified;
+        public void Update(Customer customer) {
+            _db.Entry(customer).State = EntityState.Modified;
         }
 
         public IEnumerable<Customer> Find(Func<Customer, Boolean> predicate) {
@@ -30,9 +30,9 @@ namespace Kabylan.DAL.Repository {
         }
 
         public void Delete(int id) {
-            Customer Customer = _db.Customers.Find(id);
-            if (Customer != null)
-                _db.Customers.Remove(Customer);
+            Customer customer = _db.Customers.Find(id);
+            if (customer != null)
+                _db.Customers.Remove(customer);
         }
     }
 }

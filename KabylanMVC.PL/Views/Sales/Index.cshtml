@@ -1,0 +1,310 @@
+﻿@{
+    ViewData["Title"] = "View";
+
+}
+
+<div class="row gx-3">
+    <div class="col col-sm-6">
+        <div class="card SaleCardsScrolPanel mt-3">
+            <table id="SalesTable" class="table table-hover bg-white border">
+                <thead>
+                    <tr class="table-borderless">
+                        <th>
+                            Имя
+                        </th>
+                        <th>
+                            Фамилия
+                        </th>
+                        <th>
+                            Отчество
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <div class="col col-sm-6">
+            <div class="my-3 p-3 text-center border border-3 overflow-auto CastomersPanel">
+
+                <form id="SaleForm">
+                    <div class="row p-3">
+                        <input id="SaleId" name="Id" hidden/>
+                        <!--Customer data-->
+                        <div class="col-sm-4">
+                            <label for="CustomerFirstName" class="form-label mb-0 mt-2">Имя</label>
+                            <input type="text" class="form-control text-center" name="CustomerFirstName" id="CustomerFirstName">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="CustomerMiddleName" class="form-label mb-0 mt-2">Фамилия</label>
+                            <input type="text" class="form-control text-center" name="CustomerMiddleName" id="CustomerMiddleName">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="CustomerLastName" class="form-label mb-0 mt-2">Отчество</label>
+                            <input type="text" class="form-control text-center" name="CustomerLastName" id="CustomerLastName">
+                        </div>
+
+
+                        <!--Upartment data-->
+                        <div class="col-sm-4">
+                            <label for="Square" class="form-label mb-0 mt-2">площадь</label>
+                            <input type="number" class="form-control text-center" name="Square" id="Square">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="RoomCount" class="form-label mb-0 mt-2">к-во комнат</label>
+                            <input type="number" class="form-control text-center" name="RoomCount" id="RoomCount">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Price" class="form-label mb-0 mt-2">ценна $</label>
+                            <input type="number" class="form-control text-center" name="Price" id="Price">
+                        </div>
+
+                        <!--Payment data-->
+                        <div class="col-sm-4">
+                            <label for="PaydMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
+                            <input type="number" class="form-control text-center" id="PaydMonths">
+                        </div>
+                         <div class="col-sm-8">
+                             <br/>
+                             <button id="SaleFormSendBtn" type="submit" class="btn border border-primary w-100">Сохранить изменения</button>
+                         </div>
+                        
+                        <div class="col-sm-4">
+                            <label for="payd" class="form-label">оплата/месяц</label>
+                            <input type="text" class="form-control text-center" id="MonthPayment" readonly>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="payd" class="form-label">оплачено</label>
+                            <input type="text" class="form-control text-center" id="payd" readonly>
+                         </div>
+                         <div class="col-sm-4">
+                             <label for="haveToPay" class="form-label">ост-сь оплатить</label>
+                             <input type="text" class="form-control text-center" id="haveToPay" readonly>
+                         </div> 
+                    </div>
+                </form>
+            </div>
+
+            <div class="my-3 p-3 border  border-3 d-none d-sm-block p-0" id="paymants">
+                <div class="table-responsive  PaymentPanel card-body m-0 p-0">
+                    <table id="PaymantsTable" class="table right-all table-hover bg-white border p-0 m-0 w-100">
+                        <thead>
+                            <tr class="table-borderless">
+                                <th>
+                                    Дата оплаты
+                                </th>
+                                <th>
+                                    Сумма
+                                </th>
+
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+
+
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <input id="paymentValue" type="number" class="form-control text-center border-primary" min-1>
+                    </div>
+                    <div class="col-4">
+                        <div id="addPayment" class="btn border-primary w-100">Добавить оплату</div>
+                    </div>
+                    <div class="col-4">
+                        <a id="addSaleBtn" class="btn border-primary w-100">Добавить продажу</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
+
+
+@section Scripts {
+ <script>
+
+    function formatDate(date) {
+        var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+    
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+    
+        return [day, month, year].join('.');
+    };
+
+    $(document).ready(function() {
+         var customer;
+
+        let table = $("#SalesTable").DataTable({
+            autoWidth: true,
+            processing: true,
+            serverSide: true,
+            fixedHeader: true,
+            select: true,
+            ordering: false,
+            colReorder: true,
+            lengthChange: false,
+            pageLength: 50,
+            scrollY:        "82vh",
+            
+            ajax: {
+                url: "/Sales/LoadTable",
+                type: "POST",
+                async: false,
+                contentType: "application/json",
+                dataType: "json",
+                data: function(data) {
+                    return JSON.stringify(data);
+                }
+            },
+            columns: [
+                { data: "firstName" },
+                { data: "middleName" },
+                { data: "lastName" },
+                {
+                       data: "id",
+                       render(data, type, row, meta) {
+                            @{<text>
+                    return `
+                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                        `
+                </text>}
+                       }
+                 }
+            ]
+        });
+
+        function GetSale() {
+            $.get('Sales/GetSale', { id: customer.saleId, customerId: customer.id }, function(res) {
+
+                $('#Square').val(res['square']);
+                $('#SaleId').val(res['id']);
+                $('#RoomCount').val(res['roomCount']);
+                $('#Price').val(res['price']);
+                $('#PaydMonths').val(res['payingMonths']);
+                $('#CustomerFirstName').val(res['customerFirstName']);
+                $('#CustomerMiddleName').val(res['customerMiddleName']);
+                $('#CustomerLastName').val(res['customerLastName']);
+                $('#PaydMonths').val(res['payingMonths']);
+                $('#MonthPayment').val(res['monthPayment'] + '$');
+                $('#haveToPay').val(res['haveToPay'] + ' $');
+                $('#payd').val(res['totalPayment'] + ' $');
+
+
+
+                $("#PaymantsTable").DataTable().destroy();
+
+                $("#PaymantsTable").DataTable({
+                    paginate: false,
+                    filter: false,
+                    info: false,
+                    language: { emptyTable: "нет платежей" },
+                    autoWidth: true,
+                    processing: true,
+                    fixedHeader: true,
+                    ordering: false,
+                    searching: false,
+                    lengthChange: false,
+                    data: res['payments'],
+                    columns: [
+                        { data: "date" },
+                        { data: "moneyCount" }
+                    ]
+                });
+            });
+        }
+
+         $('#SalesTable').ready(function() {
+             customer = table.row(0).data();
+             UpdateSaleInfo();
+        });
+
+        $('#addPayment').click(function() {
+            var paymentValue = $('#paymentValue').val();
+
+            if (paymentValue <= 0) {
+                $('#paymentValue').css({ 'background-color': '#fb5656' });
+                setTimeout(function() {
+                    $('#paymentValue').css({'background-color': ''});
+                }, 1000);
+                return;
+            }
+            if ($('#haveToPay').val() >= paymentValue) {
+                $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
+                    GetSale();
+                    $('#paymentValue').val('')
+                });
+            }
+            else{
+                $('#haveToPay').css({ 'background-color': '#fb5656' });
+                setTimeout(function() {
+                    $('#haveToPay').css({'background-color': ''});
+                }, 1000);
+            }
+        });
+
+        
+        $('#addSaleBtn').click(function() {
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: "Sales/Create",
+                success: function(data) {
+                    table.ajax.reload();
+                    $('#SalesTable').ready(function(){
+                        $('#SalesTable>tbody>tr:first-child').addClass("selected");
+                        customer = table.row(0).data();
+                        GetSale();
+                    });
+                }
+            });
+
+        });
+
+        function UpdateSaleInfo() {
+            var row = table.row((idx, data) => data.id === customer.id ).node();
+            $(row).addClass('selected');
+            $('#SalesTable tbody tr').not(row).removeClass('selected');
+            GetSale();
+            
+        }
+
+        $('#SalesTable tbody').on('click', 'tr', function () {
+            customer = table.row( this ).data();
+            UpdateSaleInfo();
+        });
+
+        $("#SaleForm").submit(function(event){
+            event.preventDefault();
+ 
+            var formValues= $(this).serialize();
+            $('#SaleFormSendBtn').addClass('disabled');
+
+            $.ajax({
+                async: false,
+                type: "Post",
+                url: "Sales/Edit",
+                data: formValues,
+                success: function(data) {
+                    table.ajax.reload();
+                    $('#SalesTable').ready(function(){
+                        UpdateSaleInfo();
+                        $('#SaleFormSendBtn').removeClass('disabled');
+                    });
+                }
+            });
+        });
+
+    });
+ </script>
+}

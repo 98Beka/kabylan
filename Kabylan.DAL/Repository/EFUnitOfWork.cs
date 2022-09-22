@@ -3,62 +3,62 @@ using Kabylan.DAL.Interfaces;
 using Kabylan.DAL.Models;
 
 namespace Kabylan.DAL.Repository {
-    public class EFUnitOfWork : IUnitOfWork {
-        private readonly ApplicationContext _db;
-        private UserRepository _userRepository;
-        private SaleRepository _saleRepository;
-        private PaymentRepository _paymentRepository;
-        private CustomerRepository _customerRepository;
-        private ApartmentRepository _apartmentRepository;
+    public class EFUnitOfWork : IUnitOfWork  {
+        private readonly DbContextOptions<ApplicationContext> _dbContextOptions;
+        public delegate int SaveDelegate();
+        public delegate void DisposeDelegate();
+        public event SaveDelegate SaveEvent;
+        public event DisposeDelegate DisposeEvent;
+
+        private ApplicationContext _db {
+            get {
+               var tmp =  new ApplicationContext(_dbContextOptions);
+                SaveEvent += tmp.SaveChanges;
+                DisposeEvent += tmp.Dispose;
+
+                return tmp;
+            }
+        }
 
         public EFUnitOfWork(string connectionString) {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
             optionsBuilder.UseSqlServer(connectionString);
 
-            _db = new ApplicationContext(optionsBuilder.Options);
+            _dbContextOptions = optionsBuilder.Options;
         }
 
         public IRepository<User> Users {
             get {
-                if (_userRepository == null)
-                    _userRepository = new UserRepository(_db);
-                return _userRepository;
+                return new UserRepository(_db);
             }
         }
+
+        public IRepository<Apartment> Apartments {
+            get {
+                return new ApartmentRepository(_db);
+            }
+        }
+
         public IRepository<Sale> Sales {
             get {
-                if (_saleRepository == null)
-                    _saleRepository = new SaleRepository(_db);
-                return _saleRepository;
+                return new SaleRepository(_db);
             }
         }
 
         public IRepository<Payment> Payments {
             get {
-                if (_paymentRepository == null)
-                    _paymentRepository = new PaymentRepository(_db);
-                return _paymentRepository;
+                return new PaymentRepository(_db);
             }
         }
         
         public IRepository<Customer> Customers {
             get {
-                if (_customerRepository == null)
-                    _customerRepository = new CustomerRepository(_db);
-                return _customerRepository;
+                return new CustomerRepository(_db);
             }
         } 
-        
-        public IRepository<Apartment> Apartments {
-            get {
-                if (_apartmentRepository == null)
-                    _apartmentRepository = new ApartmentRepository(_db);
-                return _apartmentRepository;
-            }
-        }
 
         public void Save() {
-            _db.SaveChanges();
+            SaveEvent?.Invoke();
         }
 
         private bool disposed = false;

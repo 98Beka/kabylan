@@ -10,15 +10,19 @@ namespace Kabylan.DAL.Repository {
             _db = context;
         }
 
-        public IEnumerable<Sale> GetAll() {
-            return _db.Sales.Include(s => s.Payments).Include(p => p.Apartment).Include(p => p.Customer);
+        public IQueryable<Sale> GetAll() {
+            return _db.Sales;
         }
 
-        public async Task<Sale> Get(int id) {
-            return await _db.Sales.Include(s => s.Payments).Include(p => p.Apartment).Include(p => p.Customer).FirstOrDefaultAsync(e => e.Id == id);
+        public async Task<Sale> GetAsync(int id) {
+            return await _db.Sales
+                .Include(s => s.Apartment)
+                .Include(s => s.Payments)
+                .Include(s => s.Customer)
+                .FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task Create(Sale Sale) {
+        public async Task CreateAsync(Sale Sale) {
             await _db.Sales.AddAsync(Sale);
         }
 

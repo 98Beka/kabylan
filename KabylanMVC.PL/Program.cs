@@ -1,7 +1,25 @@
+using AutoMapper;
+using Kabylan.BLL.Services;
+using KabylanMVC.PL.Profiles;
+using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+string connectionStr = builder.Configuration["ConnectionStrings:DefaultConnection"];
+builder.Services.AddSingleton<SaleService, SaleService>(
+    s => new SaleService(connectionStr));
+builder.Services.AddSingleton<IMapper, IMapper>(
+    s => new MapperConfiguration(c => {
+        c.AddProfile<MapperConfig>();
+    }).CreateMapper()
+);
+builder.Services.AddControllers().AddJsonOptions(x =>
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 
 var app = builder.Build();
 
@@ -18,6 +36,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",

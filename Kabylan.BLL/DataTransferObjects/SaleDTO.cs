@@ -1,10 +1,16 @@
-﻿namespace Kabylan.BLL.DataTransferObjects {
+﻿using Kabylan.DAL.Models;
+
+namespace Kabylan.BLL.DataTransferObjects {
     public class SaleDTO {
         public int Id { get; set; }
-        public CustomerDTO Customer { get; set; }
-        public ApartmentDTO Apartment { get; set; }
-        public List<PaymentDTO> Payments { get; set; } = new List<PaymentDTO>();
-        public int PaydMonths { get; set; }
+        public string CustomerFirstName { get; set; } = String.Empty;
+        public string CustomerMiddleName { get; set; } = String.Empty;
+        public string CustomerLastName { get; set; } = String.Empty;
+        public int Price { get; set; }
+        public int Square { get; set; }
+        public int RoomCount { get; set; }
+        public int PayingMonths { get; set; }
         public DateTime SaleDate { get; set; }
+        public List<Payment> Payments { get; set; }
     }
 }

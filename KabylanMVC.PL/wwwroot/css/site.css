@@ -1,18 +1,41 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    position: fixed;
+}
+
+.SaleCardsScrolPanel {
+    height: 100vh;
+}
+
+.CastomersPanel {
+    height: 45vh;
+}
+
+.PaymentPanel {
+    height: 43vh;
+}
+
+#SalesTable tbody > tr {
+    height: 50px;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: lightblue;
+}
+
+.fa-trash {
+    color: #fb5656;
+    cursor: pointer;
+}
+
+
+.fa-edit {
+    color: #2f5cef;
+    cursor: pointer;
+}
+.table th {
+    text-align: center;
 }

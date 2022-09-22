@@ -11,7 +11,7 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         public IActionResult Index() {
-            return View();
+            return Redirect("/Sales");
         }
 
         public IActionResult Privacy() {
