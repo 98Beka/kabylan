@@ -35,13 +35,13 @@ namespace Kabylan.DAL.Repository {
 
         public IRepository<Apartment> Apartments {
             get {
-                return new ApartmentRepository(_db);
+                return new ApartmentRepository(_db); ;
             }
         }
 
         public IRepository<Sale> Sales {
             get {
-                return new SaleRepository(_db);
+                return new SaleRepository(_db); ;
             }
         }
 
@@ -53,7 +53,7 @@ namespace Kabylan.DAL.Repository {
         
         public IRepository<Customer> Customers {
             get {
-                return new CustomerRepository(_db);
+                return new CustomerRepository(_db); ;
             }
         } 
 

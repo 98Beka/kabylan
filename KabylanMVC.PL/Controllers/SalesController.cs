@@ -59,9 +59,9 @@ namespace KabylanMVC.PL.Controllers {
             try {
                 var totalResultsCount = _saleService.GetAllCustomers().Count();
                 var _data = _saleService.GetAllCustomers()
+                    .OrderByDescending(s => s.Id)
                     .Skip(startRec)
                     .Take(pageSize)
-                    .OrderByDescending(s => s.Id)
                     .ToList();
 
                 return Json(new {
