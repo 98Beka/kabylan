@@ -3,15 +3,19 @@ using Kabylan.DAL.Interfaces;
 using Kabylan.DAL.Models;
 
 namespace Kabylan.DAL.Repository {
-    public class EFUnitOfWork : IUnitOfWork {
+    public class EFUnitOfWork : IUnitOfWork  {
         private readonly DbContextOptions<ApplicationContext> _dbContextOptions;
         public delegate int SaveDelegate();
+        public delegate void DisposeDelegate();
         public event SaveDelegate SaveEvent;
+        public event DisposeDelegate DisposeEvent;
 
         private ApplicationContext _db {
             get {
                var tmp =  new ApplicationContext(_dbContextOptions);
                 SaveEvent += tmp.SaveChanges;
+                DisposeEvent += tmp.Dispose;
+
                 return tmp;
             }
         }
@@ -31,13 +35,13 @@ namespace Kabylan.DAL.Repository {
 
         public IRepository<Apartment> Apartments {
             get {
-                return new ApartmentRepository(_db); ;
+                return new ApartmentRepository(_db);
             }
         }
 
         public IRepository<Sale> Sales {
             get {
-                return new SaleRepository(_db); ;
+                return new SaleRepository(_db);
             }
         }
 
@@ -49,7 +53,7 @@ namespace Kabylan.DAL.Repository {
         
         public IRepository<Customer> Customers {
             get {
-                return new CustomerRepository(_db); ;
+                return new CustomerRepository(_db);
             }
         } 
 

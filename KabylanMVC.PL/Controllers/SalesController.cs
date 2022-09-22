@@ -21,14 +21,13 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create() {
+        public async Task<IActionResult> CreateAsync() {
             var sale = await _saleService.CreateAsync();
-            sale.SaleDate = DateTime.Today;
             return RedirectToAction(nameof(Index), "Sales");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(SaleDTO sale) {
+        public async Task<IActionResult> EditAsync(SaleDTO sale) {
             if (sale.Id == 0)
                 return BadRequest();
             sale.CustomerFirstName = sale.CustomerFirstName ?? string.Empty;
@@ -39,7 +38,7 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddPaymnet(int id, int value) {
+        public async Task<IActionResult> AddPaymnetAsync(int id, int value) {
             if (id == 0 || value <= 0)
                 return BadRequest();
             await _saleService.AddPayment(id, value);
@@ -59,7 +58,6 @@ namespace KabylanMVC.PL.Controllers {
             int pageSize = dtParameters.length;
             try {
                 var totalResultsCount = _saleService.GetAllCustomers().Count();
-                var _d = _saleService.GetAllCustomers().ToList();
                 var _data = _saleService.GetAllCustomers()
                     .Skip(startRec)
                     .Take(pageSize)
@@ -79,7 +77,7 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [Route("Sales/DeleteSale")]
-        public async Task<IActionResult> DeleteSale(int id) {
+        public async Task<IActionResult> DeleteSaleAsync(int id) {
             if (id == 0) {
                 return NotFound();
             }
@@ -94,7 +92,7 @@ namespace KabylanMVC.PL.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id) {
+        public async Task<IActionResult> DeleteConfirmedAsync(long id) {
             var sale = await _saleService.GetAsync((int)id);
             if (sale != null) 
                 await _saleService.DeleteAsync(sale.Id);
@@ -103,7 +101,7 @@ namespace KabylanMVC.PL.Controllers {
         }
 
         [HttpGet]
-        public async Task<SaleViewModel> GetSale(int id, int customerId) {
+        public async Task<SaleViewModel> GetSaleAsync(int id, int customerId) {
             var sale =  await _saleService.GetAsync(id);
 
             var res = _mapper.Map<SaleViewModel>(sale);
