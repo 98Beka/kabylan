@@ -10,6 +10,9 @@
                 <thead>
                     <tr class="table-borderless">
                         <th>
+                            id
+                        </th>
+                        <th>
                             Имя
                         </th>
                         <th>
@@ -149,8 +152,8 @@
             autoWidth: true,
             processing: true,
             serverSide: true,
+            searching: false,
             fixedHeader: true,
-            select: true,
             ordering: false,
             colReorder: true,
             lengthChange: false,
@@ -168,6 +171,7 @@
                 }
             },
             columns: [
+                { data: "id" },
                 { data: "firstName" },
                 { data: "middleName" },
                 { data: "lastName" },
@@ -175,10 +179,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                    return `
-                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                        `
-                </text>}
+                        return `
+                                <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                            `
+                    </text>}
                        }
                  }
             ]
@@ -212,11 +216,12 @@
                     autoWidth: true,
                     processing: true,
                     fixedHeader: true,
-                    ordering: false,
                     searching: false,
                     lengthChange: false,
+                    order: [[0, 'desc']],
                     data: res['payments'],
                     columns: [
+                        { data:"id" },
                         { data: "date" },
                         { data: "moneyCount" }
                     ]
