@@ -48,6 +48,23 @@
                             <label for="CustomerLastName" class="form-label mb-0 mt-2">Отчество</label>
                             <input type="text" class="form-control text-center" name="CustomerLastName" id="CustomerLastName">
                         </div>
+                        <div class="col-sm-4">
+                            <label for="Entrance" class="form-label mb-0 mt-2">Подъезд</label>
+                            <input type="number" class="form-control text-center" name="Entrance" id="Entrance">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Block" class="form-label mb-0 mt-2">Корпус/блок</label>
+                            <input type="number" class="form-control text-center" name="Block" id="Block">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Floor" class="form-label mb-0 mt-2">Этаж</label>
+                            <input type="number" class="form-control text-center" name="Floor" id="Floor">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Number" class="form-label mb-0 mt-2">Номер квартиры</label>
+                            <input type="number" class="form-control text-center" name="Number" id="Number">
+                        </div>
+                        
 
 
                         <!--Upartment data-->
@@ -69,7 +86,7 @@
                             <label for="PayingMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
                             <input type="number" class="form-control text-center" name="PayingMonths" id="PayingMonths">
                         </div>
-                         <div class="col-sm-8">
+                         <div class="col-sm-4">
                              <br/>
                              <button id="SaleFormSendBtn" type="submit" class="btn border border-primary w-100">Сохранить изменения</button>
                          </div>
@@ -183,10 +200,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                                                    return `
-                                                                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                                                        `
-                                                                </text>}
+                                                                            return `
+                                                                                    <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                                                                `
+                                                                        </text>}
                        }
                  }
             ]
@@ -199,6 +216,10 @@
                 $('#SaleId').val(res['id']);
                 $('#RoomCount').val(res['roomCount']);
                 $('#Price').val(res['price']);
+                $('#Entrance').val(res['entrance']);
+                $('#Block').val(res['block']);
+                $('#Floor').val(res['floor']);
+                $('#Number').val(res['number']);
                 $('#PayingMonths').val(res['payingMonths']);
                 $('#CustomerFirstName').val(res['customerFirstName']);
                 $('#CustomerMiddleName').val(res['customerMiddleName']);
@@ -232,10 +253,10 @@
                             data: "id",
                             render(data, type, row, meta) {
                                 @{<text>
-                                                return `
-                                                        <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
-                                                    `
-                                            </text>}
+                                                        return `
+                                                                <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
+                                                            `
+                                                    </text>}
                             }
                         }
                     ]
@@ -248,6 +269,7 @@
              UpdateSaleInfo();
         });
 
+        //add payment
         $('#addPayment').click(function() {
             var paymentValue = $('#paymentValue').val();
             if (Number(paymentValue) > 0) {
@@ -264,22 +286,26 @@
             }
         });
 
+        //remove payment
         $('#PaymantsTable').on('click', 'td', function () {
             if($(this).index() === 3)
             {
-                var data = $('#PaymantsTable').DataTable().cell( this ).data();
-                $.ajax({
-                    async: false,
-                    type: "GET",
-                    url: "Sales/RemovePaymnet",
-                    data: {saleId: customer.saleId, paymentId:data},
-                    success: function(data) {
-                        GetSale();
-                    }
-                });
+                if (confirm("Вы дейтвительно хотите удалить оплату?")) {
+                    var data = $('#PaymantsTable').DataTable().cell(this).data();
+                    $.ajax({
+                        async: false,
+                        type: "GET",
+                        url: "Sales/RemovePaymnet",
+                        data: { saleId: customer.saleId, paymentId: data },
+                        success: function(data) {
+                            GetSale();
+                        }
+                    });
+                }
             }
         })
 
+        //addSale
         $('#addSaleBtn').click(function() {
             $.ajax({
                 async: false,

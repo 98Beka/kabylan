@@ -38,7 +38,11 @@ public class ApplicationContext : DbContext {
                 Price = 70000,
                 RoomCount = 3,
                 Square = 70,
-                SaleId = 1
+                SaleId = 1,
+                Entrance = 0,
+                Block = 0,
+                Floor = 0,
+                Number = 0
             });
 
         modelBuilder.Entity<Sale>().HasData(
