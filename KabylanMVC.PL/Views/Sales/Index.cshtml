@@ -183,10 +183,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                    return `
-                                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                        `
-                                </text>}
+                                                            return `
+                                                                    <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                                                `
+                                                        </text>}
                        }
                  }
             ]
@@ -227,7 +227,17 @@
                     columns: [
                         { data:"id" },
                         { data: "date" },
-                        { data: "moneyCount" }
+                        { data: "moneyCount" },
+                        {
+                            data: "id",
+                            render(data, type, row, meta) {
+                                @{<text>
+                                        return `
+                                                <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
+                                            `
+                                    </text>}
+                            }
+                        }
                     ]
                 });
             });
@@ -240,15 +250,8 @@
 
         $('#addPayment').click(function() {
             var paymentValue = $('#paymentValue').val();
-
-            if (paymentValue <= 0) {
-                $('#paymentValue').css({ 'background-color': '#fb5656' });
-                setTimeout(function() {
-                    $('#paymentValue').css({'background-color': ''});
-                }, 1000);
-                return;
-            }
-            if ($('#haveToPay').val() >= paymentValue) {
+            var haveToPay = $('#haveToPay').val().replace(/\D/g, '');
+            if ((paymentValue > 0 && haveToPay >= paymentValue)) {
                 $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
                     GetSale();
                     $('#paymentValue').val('')
@@ -262,7 +265,22 @@
             }
         });
 
-        
+        $('#PaymantsTable').on('click', 'td', function () {
+            if($(this).index() === 3)
+            {
+                var data = $('#PaymantsTable').DataTable().cell( this ).data();
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "Sales/RemovePaymnet",
+                    data: {saleId: customer.saleId, paymentId:data},
+                    success: function(data) {
+                        GetSale();
+                    }
+                });
+            }
+        })
+
         $('#addSaleBtn').click(function() {
             $.ajax({
                 async: false,

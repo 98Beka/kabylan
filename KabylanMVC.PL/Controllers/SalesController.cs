@@ -47,7 +47,7 @@ namespace KabylanMVC.PL.Controllers {
 
         [HttpGet]
         public async Task<IActionResult> RemovePaymnetAsync(int saleId, int paymentId) {
-            await _saleService.RemovePayment(saleId, paymentId);
+            await _saleService.RemovePayment(paymentId);
             return Ok();
         }
 
