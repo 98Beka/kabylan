@@ -96,6 +96,9 @@
                         <thead>
                             <tr class="table-borderless">
                                 <th>
+                                    id
+                                </th>
+                                <th>
                                     Дата оплаты
                                 </th>
                                 <th>
@@ -152,8 +155,8 @@
             autoWidth: true,
             processing: true,
             serverSide: true,
-            searching: false,
             fixedHeader: true,
+            searching: true,
             ordering: false,
             colReorder: true,
             lengthChange: false,
@@ -167,6 +170,7 @@
                 contentType: "application/json",
                 dataType: "json",
                 data: function(data) {
+                    data.searching = "ffff";
                     return JSON.stringify(data);
                 }
             },
@@ -179,10 +183,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                        return `
-                                <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                            `
-                    </text>}
+                                    return `
+                                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                        `
+                                </text>}
                        }
                  }
             ]
@@ -200,7 +204,7 @@
                 $('#CustomerMiddleName').val(res['customerMiddleName']);
                 $('#CustomerLastName').val(res['customerLastName']);
                 $('#PaydMonths').val(res['payingMonths']);
-                $('#MonthPayment').val(res['monthPayment'] + '$');
+                $('#MonthPayment').val(res['monthPayment'] + ' $');
                 $('#haveToPay').val(res['haveToPay'] + ' $');
                 $('#payd').val(res['totalPayment'] + ' $');
 
@@ -301,7 +305,7 @@
                 url: "Sales/Edit",
                 data: formValues,
                 success: function(data) {
-                    table.ajax.reload();
+                    table.ajax.reload(null, false);
                     $('#SalesTable').ready(function(){
                         UpdateSaleInfo();
                         $('#SaleFormSendBtn').removeClass('disabled');
