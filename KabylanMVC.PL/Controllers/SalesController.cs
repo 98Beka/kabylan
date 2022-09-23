@@ -79,6 +79,7 @@ namespace KabylanMVC.PL.Controllers {
         }
         private IQueryable<Customer> Filtrate(IQueryable<Customer> customers, string searchValue) {
             if (!string.IsNullOrEmpty(searchValue)) {
+                searchValue = searchValue.Replace(" ", "");
                 customers = customers.
                     Where(c => (c.FirstName + c.MiddleName + c.LastName).Contains(searchValue));
             }

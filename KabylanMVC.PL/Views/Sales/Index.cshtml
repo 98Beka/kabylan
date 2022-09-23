@@ -66,8 +66,8 @@
 
                         <!--Payment data-->
                         <div class="col-sm-4">
-                            <label for="PaydMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
-                            <input type="number" class="form-control text-center" id="PaydMonths">
+                            <label for="PayingMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
+                            <input type="number" class="form-control text-center" name="PayingMonths" id="PayingMonths">
                         </div>
                          <div class="col-sm-8">
                              <br/>
@@ -183,10 +183,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                                            return `
-                                                                    <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                                                `
-                                                        </text>}
+                                                                    return `
+                                                                            <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                                                        `
+                                                                </text>}
                        }
                  }
             ]
@@ -199,7 +199,7 @@
                 $('#SaleId').val(res['id']);
                 $('#RoomCount').val(res['roomCount']);
                 $('#Price').val(res['price']);
-                $('#PaydMonths').val(res['payingMonths']);
+                $('#PayingMonths').val(res['payingMonths']);
                 $('#CustomerFirstName').val(res['customerFirstName']);
                 $('#CustomerMiddleName').val(res['customerMiddleName']);
                 $('#CustomerLastName').val(res['customerLastName']);
@@ -232,10 +232,10 @@
                             data: "id",
                             render(data, type, row, meta) {
                                 @{<text>
-                                        return `
-                                                <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
-                                            `
-                                    </text>}
+                                                return `
+                                                        <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
+                                                    `
+                                            </text>}
                             }
                         }
                     ]
@@ -250,8 +250,7 @@
 
         $('#addPayment').click(function() {
             var paymentValue = $('#paymentValue').val();
-            var haveToPay = $('#haveToPay').val().replace(/\D/g, '');
-            if ((paymentValue > 0 && haveToPay >= paymentValue)) {
+            if (Number(paymentValue) > 0) {
                 $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
                     GetSale();
                     $('#paymentValue').val('')
