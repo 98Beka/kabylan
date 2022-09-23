@@ -48,6 +48,23 @@
                             <label for="CustomerLastName" class="form-label mb-0 mt-2">Отчество</label>
                             <input type="text" class="form-control text-center" name="CustomerLastName" id="CustomerLastName">
                         </div>
+                        <div class="col-sm-4">
+                            <label for="Entrance" class="form-label mb-0 mt-2">Подъезд</label>
+                            <input type="number" class="form-control text-center" name="Entrance" id="Entrance">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Block" class="form-label mb-0 mt-2">Корпус/блок</label>
+                            <input type="number" class="form-control text-center" name="Block" id="Block">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Floor" class="form-label mb-0 mt-2">Этаж</label>
+                            <input type="number" class="form-control text-center" name="Floor" id="Floor">
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="Number" class="form-label mb-0 mt-2">Номер квартиры</label>
+                            <input type="number" class="form-control text-center" name="Number" id="Number">
+                        </div>
+                        
 
 
                         <!--Upartment data-->
@@ -66,10 +83,10 @@
 
                         <!--Payment data-->
                         <div class="col-sm-4">
-                            <label for="PaydMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
-                            <input type="number" class="form-control text-center" id="PaydMonths">
+                            <label for="PayingMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
+                            <input type="number" class="form-control text-center" name="PayingMonths" id="PayingMonths">
                         </div>
-                         <div class="col-sm-8">
+                         <div class="col-sm-4">
                              <br/>
                              <button id="SaleFormSendBtn" type="submit" class="btn border border-primary w-100">Сохранить изменения</button>
                          </div>
@@ -95,6 +112,9 @@
                     <table id="PaymantsTable" class="table right-all table-hover bg-white border p-0 m-0 w-100">
                         <thead>
                             <tr class="table-borderless">
+                                <th>
+                                    id
+                                </th>
                                 <th>
                                     Дата оплаты
                                 </th>
@@ -152,8 +172,8 @@
             autoWidth: true,
             processing: true,
             serverSide: true,
-            searching: false,
             fixedHeader: true,
+            searching: true,
             ordering: false,
             colReorder: true,
             lengthChange: false,
@@ -167,6 +187,7 @@
                 contentType: "application/json",
                 dataType: "json",
                 data: function(data) {
+                    data.searching = "ffff";
                     return JSON.stringify(data);
                 }
             },
@@ -179,10 +200,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                        return `
-                                <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                            `
-                    </text>}
+                                                                            return `
+                                                                                    <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                                                                `
+                                                                        </text>}
                        }
                  }
             ]
@@ -195,12 +216,16 @@
                 $('#SaleId').val(res['id']);
                 $('#RoomCount').val(res['roomCount']);
                 $('#Price').val(res['price']);
-                $('#PaydMonths').val(res['payingMonths']);
+                $('#Entrance').val(res['entrance']);
+                $('#Block').val(res['block']);
+                $('#Floor').val(res['floor']);
+                $('#Number').val(res['number']);
+                $('#PayingMonths').val(res['payingMonths']);
                 $('#CustomerFirstName').val(res['customerFirstName']);
                 $('#CustomerMiddleName').val(res['customerMiddleName']);
                 $('#CustomerLastName').val(res['customerLastName']);
                 $('#PaydMonths').val(res['payingMonths']);
-                $('#MonthPayment').val(res['monthPayment'] + '$');
+                $('#MonthPayment').val(res['monthPayment'] + ' $');
                 $('#haveToPay').val(res['haveToPay'] + ' $');
                 $('#payd').val(res['totalPayment'] + ' $');
 
@@ -223,7 +248,17 @@
                     columns: [
                         { data:"id" },
                         { data: "date" },
-                        { data: "moneyCount" }
+                        { data: "moneyCount" },
+                        {
+                            data: "id",
+                            render(data, type, row, meta) {
+                                @{<text>
+                                                        return `
+                                                                <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
+                                                            `
+                                                    </text>}
+                            }
+                        }
                     ]
                 });
             });
@@ -234,17 +269,10 @@
              UpdateSaleInfo();
         });
 
+        //add payment
         $('#addPayment').click(function() {
             var paymentValue = $('#paymentValue').val();
-
-            if (paymentValue <= 0) {
-                $('#paymentValue').css({ 'background-color': '#fb5656' });
-                setTimeout(function() {
-                    $('#paymentValue').css({'background-color': ''});
-                }, 1000);
-                return;
-            }
-            if ($('#haveToPay').val() >= paymentValue) {
+            if (Number(paymentValue) > 0) {
                 $.get('Sales/AddPaymnet', { id: customer.saleId, value: paymentValue }, function() {
                     GetSale();
                     $('#paymentValue').val('')
@@ -258,7 +286,26 @@
             }
         });
 
-        
+        //remove payment
+        $('#PaymantsTable').on('click', 'td', function () {
+            if($(this).index() === 3)
+            {
+                if (confirm("Вы дейтвительно хотите удалить оплату?")) {
+                    var data = $('#PaymantsTable').DataTable().cell(this).data();
+                    $.ajax({
+                        async: false,
+                        type: "GET",
+                        url: "Sales/RemovePaymnet",
+                        data: { saleId: customer.saleId, paymentId: data },
+                        success: function(data) {
+                            GetSale();
+                        }
+                    });
+                }
+            }
+        })
+
+        //addSale
         $('#addSaleBtn').click(function() {
             $.ajax({
                 async: false,
@@ -301,7 +348,7 @@
                 url: "Sales/Edit",
                 data: formValues,
                 success: function(data) {
-                    table.ajax.reload();
+                    table.ajax.reload(null, false);
                     $('#SalesTable').ready(function(){
                         UpdateSaleInfo();
                         $('#SaleFormSendBtn').removeClass('disabled');

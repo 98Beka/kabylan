@@ -12,5 +12,9 @@ namespace Kabylan.BLL.DataTransferObjects {
         public int PayingMonths { get; set; }
         public DateTime SaleDate { get; set; }
         public List<Payment> Payments { get; set; }
+        public int Entrance { get; set; }
+        public int Block { get; set; }
+        public int Floor { get; set; }
+        public int Number { get; set; }
     }
 }

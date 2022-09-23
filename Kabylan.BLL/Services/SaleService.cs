@@ -68,13 +68,10 @@ namespace Kabylan.BLL.Services {
             _database.Save();
         }        
         
-        public async Task RemovePayment(int paymentId, int saleId) {
-            if (paymentId == 0 || saleId == 0)
+        public async Task RemovePayment(int paymentId) {
+            if (paymentId == 0)
                 return;
-            var oldSale = await _database.Sales.GetAsync(saleId);
-            if (oldSale == null)
-                throw new ValidationException("oldSale = null", "");
-            oldSale.Payments?.Remove(oldSale.Payments?.FirstOrDefault(p => p.Id == paymentId));
+            _database.Payments.Delete(paymentId);
             _database.Save();
         }
         public async Task DeleteAsync(int id) {

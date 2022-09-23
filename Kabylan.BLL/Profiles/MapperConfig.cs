@@ -11,6 +11,10 @@ namespace Kabylan.BLL.Profiles
                 .ForMember(m => m.Square, s => s.MapFrom(p => p.Apartment.Square))
                 .ForMember(m => m.Price, s => s.MapFrom(p => p.Apartment.Price))
                 .ForMember(m => m.RoomCount, s => s.MapFrom(p => p.Apartment.RoomCount))
+                .ForMember(m => m.Entrance, s => s.MapFrom(p => p.Apartment.Entrance))
+                .ForMember(m => m.Block, s => s.MapFrom(p => p.Apartment.Block))
+                .ForMember(m => m.Floor, s => s.MapFrom(p => p.Apartment.Floor))
+                .ForMember(m => m.Number, s => s.MapFrom(p => p.Apartment.Number))
                 .ForMember(m => m.CustomerFirstName, s => s.MapFrom(p => p.Customer.FirstName))
                 .ForMember(m => m.CustomerMiddleName, s => s.MapFrom(p => p.Customer.MiddleName))
                 .ForMember(m => m.CustomerLastName, s => s.MapFrom(p => p.Customer.LastName));

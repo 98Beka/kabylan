@@ -2,7 +2,9 @@
 
 namespace Kabyla.BLL.BusinessObjects {
 
-   
+   public class Filter {
+        
+    }
 
 
 

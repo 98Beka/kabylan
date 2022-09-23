@@ -47,7 +47,7 @@ namespace KabylanMVC.PL.Controllers {
 
         [HttpGet]
         public async Task<IActionResult> RemovePaymnetAsync(int saleId, int paymentId) {
-            await _saleService.RemovePayment(saleId, paymentId);
+            await _saleService.RemovePayment(paymentId);
             return Ok();
         }
 
@@ -58,7 +58,9 @@ namespace KabylanMVC.PL.Controllers {
             int pageSize = dtParameters.length;
             try {
                 var totalResultsCount = _saleService.GetAllCustomers().Count();
-                var _data = _saleService.GetAllCustomers()
+                var allCustomers = _saleService.GetAllCustomers();
+                allCustomers = Filtrate(allCustomers, dtParameters?.search?.value);
+                var _data = allCustomers
                     .OrderByDescending(s => s.Id)
                     .Skip(startRec)
                     .Take(pageSize)
@@ -74,6 +76,14 @@ namespace KabylanMVC.PL.Controllers {
                 Console.WriteLine(ex);
                 return BadRequest();
             }
+        }
+        private IQueryable<Customer> Filtrate(IQueryable<Customer> customers, string searchValue) {
+            if (!string.IsNullOrEmpty(searchValue)) {
+                searchValue = searchValue.Replace(" ", "");
+                customers = customers.
+                    Where(c => (c.FirstName + c.MiddleName + c.LastName).Contains(searchValue));
+            }
+            return customers;
         }
 
         [Route("Sales/DeleteSale")]
