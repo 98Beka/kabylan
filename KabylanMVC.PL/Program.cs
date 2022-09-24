@@ -1,6 +1,9 @@
+using KabylanMVC.PL.Models;
 using AutoMapper;
 using Kabylan.BLL.Services;
 using KabylanMVC.PL.Profiles;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,12 @@ builder.Services.AddRazorPages()
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 string connectionStr = builder.Configuration["ConnectionStrings:DefaultConnection"];
+builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(connectionStr));
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => //CookieAuthenticationOptions
+    {
+        options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+    });
 builder.Services.AddSingleton<SaleService, SaleService>(
     s => new SaleService(connectionStr));
 builder.Services.AddSingleton<IMapper, IMapper>(
@@ -35,6 +44,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

@@ -7,7 +7,6 @@ using Kabylan.DAL.Models;
 
 namespace Kabylan.DAL.Interfaces {
     public interface IUnitOfWork : IDisposable {
-        IRepository<User> Users { get; }
         IRepository<Sale> Sales { get; }
         IRepository<Customer> Customers { get; }
         IRepository<Payment> Payments { get; }

@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using Kabylan.BLL.DataTransferObjects;
-using KabylanMVC.PL.Models;
 using Kabylan.DAL.Models;
+using KabylanMVC.PL.ViewModels;
 
-namespace KabylanMVC.PL.Profiles
-{
+namespace KabylanMVC.PL.Profiles {
     public class MapperConfig : Profile
     {
         public MapperConfig() {

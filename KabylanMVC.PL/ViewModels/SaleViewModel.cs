@@ -1,6 +1,6 @@
 ﻿using Kabylan.DAL.Models;
 
-namespace KabylanMVC.PL.Models {
+namespace KabylanMVC.PL.ViewModels {
     public class SaleViewModel {
         public int Id { get; set; }
         public int CustomerId { get; set; }

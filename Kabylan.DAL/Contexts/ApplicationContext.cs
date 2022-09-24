@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Kabylan.DAL.Models;
 public class ApplicationContext : DbContext {
-    public DbSet<User> Users { get; set; } = null!;
     public DbSet<Sale> Sales { get; set; } = null!;
     public DbSet<Payment> Payments { get; set; } = null!;
     public DbSet<Customer> Customers { get; set; } = null!;
