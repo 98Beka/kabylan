@@ -3,9 +3,9 @@ using Kabylan.BLL.DataTransferObjects;
 using Kabylan.BLL.Services;
 using Kabylan.DAL.Models;
 using KabylanMVC.PL.Models;
+using KabylanMVC.PL.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
 
 namespace KabylanMVC.PL.Controllers {
     public class SalesController : Controller {
@@ -15,7 +15,7 @@ namespace KabylanMVC.PL.Controllers {
             _saleService = saleService;
             _mapper = mapper;
         }
-
+        [Authorize]
         public ActionResult Index() {
             return View();
         }

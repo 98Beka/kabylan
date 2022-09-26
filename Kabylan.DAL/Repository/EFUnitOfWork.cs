@@ -27,12 +27,6 @@ namespace Kabylan.DAL.Repository {
             _dbContextOptions = optionsBuilder.Options;
         }
 
-        public IRepository<User> Users {
-            get {
-                return new UserRepository(_db);
-            }
-        }
-
         public IRepository<Apartment> Apartments {
             get {
                 return new ApartmentRepository(_db); ;
