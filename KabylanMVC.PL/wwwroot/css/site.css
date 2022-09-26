@@ -1,5 +1,7 @@
 body {
     position: fixed;
+    min-width: 100vw;
+    min-height: 100vh;
 }
 
 .SaleCardsScrolPanel {
@@ -38,4 +40,9 @@ body {
 }
 .table th {
     text-align: center;
+}
+.login{
+    margin: auto !important;
+    height: 500px;
+    width: 500px;
 }
