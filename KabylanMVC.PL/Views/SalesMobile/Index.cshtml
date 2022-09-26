@@ -2,113 +2,105 @@
     ViewData["Title"] = "View";
 
 }
-<a href="/SalesMobile">Мобильный</a>
-<div style="position:fixed;">
-    <div class="row gx-3">
-    <div class="col col-sm-6">
-        <div class="card SaleCardsScrolPanel mt-3">
-            <table id="SalesTable" class="table table-hover bg-white border">
-                <thead>
-                    <tr class="table-borderless">
-                        <th>
-                            id
-                        </th>
-                        <th>
-                            Имя
-                        </th>
-                        <th>
-                            Фамилия
-                        </th>
-                        <th>
-                            Отчество
-                        </th>
+<a href="/Sales">Пк</a>
+<table id="SalesTable" class="table w-100 table-hover bg-white border">
+    <thead>
+        <tr class="table-borderless">
+            <th>
+                id
+            </th>
+            <th>
+                Имя
+            </th>
+            <th>
+                Фамилия
+            </th>
+            <th>
+                Отчество
+            </th>
 
-                        <th></th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
+            <th></th>
+        </tr>
+    </thead>
+</table>
 
-    <div class="col col-sm-6">
-            <div class="my-3 p-3 text-center border border-3 overflow-auto CastomersPanel">
+<div class="w-100">
 
-                <form id="SaleForm">
-                    <div class="row p-3">
-                        <input id="SaleId" name="Id" hidden/>
-                        <!--Customer data-->
-                        <div class="col-sm-4">
-                            <label for="CustomerFirstName" class="form-label mb-0 mt-2">Имя</label>
-                            <input type="text" class="form-control text-center" name="CustomerFirstName" id="CustomerFirstName">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="CustomerMiddleName" class="form-label mb-0 mt-2">Фамилия</label>
-                            <input type="text" class="form-control text-center" name="CustomerMiddleName" id="CustomerMiddleName">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="CustomerLastName" class="form-label mb-0 mt-2">Отчество</label>
-                            <input type="text" class="form-control text-center" name="CustomerLastName" id="CustomerLastName">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="Entrance" class="form-label mb-0 mt-2">Подъезд</label>
-                            <input type="number" class="form-control text-center" name="Entrance" id="Entrance">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="Block" class="form-label mb-0 mt-2">Корпус/блок</label>
-                            <input type="number" class="form-control text-center" name="Block" id="Block">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="Floor" class="form-label mb-0 mt-2">Этаж</label>
-                            <input type="number" class="form-control text-center" name="Floor" id="Floor">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="Number" class="form-label mb-0 mt-2">Номер квартиры</label>
-                            <input type="number" class="form-control text-center" name="Number" id="Number">
-                        </div>
+    <form id="SaleForm">
+        <div class="row p-3">
+            <input id="SaleId" name="Id" hidden/>
+            <!--Customer data-->
+            <div class="col-sm-4">
+                <label for="CustomerFirstName" class="form-label mb-0 mt-2">Имя</label>
+                <input type="text" class="form-control text-center" name="CustomerFirstName" id="CustomerFirstName">
+            </div>
+            <div class="col-sm-4">
+                <label for="CustomerMiddleName" class="form-label mb-0 mt-2">Фамилия</label>
+                <input type="text" class="form-control text-center" name="CustomerMiddleName" id="CustomerMiddleName">
+            </div>
+            <div class="col-sm-4">
+                <label for="CustomerLastName" class="form-label mb-0 mt-2">Отчество</label>
+                <input type="text" class="form-control text-center" name="CustomerLastName" id="CustomerLastName">
+            </div>
+            <div class="col-sm-4">
+                <label for="Entrance" class="form-label mb-0 mt-2">Подъезд</label>
+                <input type="number" class="form-control text-center" name="Entrance" id="Entrance">
+            </div>
+            <div class="col-sm-4">
+                <label for="Block" class="form-label mb-0 mt-2">Корпус/блок</label>
+                <input type="number" class="form-control text-center" name="Block" id="Block">
+            </div>
+            <div class="col-sm-4">
+                <label for="Floor" class="form-label mb-0 mt-2">Этаж</label>
+                <input type="number" class="form-control text-center" name="Floor" id="Floor">
+            </div>
+            <div class="col-sm-4">
+                <label for="Number" class="form-label mb-0 mt-2">Номер квартиры</label>
+                <input type="number" class="form-control text-center" name="Number" id="Number">
+            </div>
                         
 
 
-                        <!--Upartment data-->
-                        <div class="col-sm-4">
-                            <label for="Square" class="form-label mb-0 mt-2">площадь</label>
-                            <input type="number" class="form-control text-center" name="Square" id="Square">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="RoomCount" class="form-label mb-0 mt-2">к-во комнат</label>
-                            <input type="number" class="form-control text-center" name="RoomCount" id="RoomCount">
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="Price" class="form-label mb-0 mt-2">ценна $</label>
-                            <input type="number" class="form-control text-center" name="Price" id="Price">
-                        </div>
-
-                        <!--Payment data-->
-                        <div class="col-sm-4">
-                            <label for="PayingMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
-                            <input type="number" class="form-control text-center" name="PayingMonths" id="PayingMonths">
-                        </div>
-                         <div class="col-sm-4">
-                             <br/>
-                             <button id="SaleFormSendBtn" type="submit" class="btn border border-primary w-100">Сохранить изменения</button>
-                         </div>
-                        
-                        <div class="col-sm-4">
-                            <label for="payd" class="form-label">оплата/месяц</label>
-                            <input type="text" class="form-control text-center" id="MonthPayment" readonly>
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="payd" class="form-label">оплачено</label>
-                            <input type="text" class="form-control text-center" id="payd" readonly>
-                         </div>
-                         <div class="col-sm-4">
-                             <label for="haveToPay" class="form-label">ост-сь оплатить</label>
-                             <input type="text" class="form-control text-center" id="haveToPay" readonly>
-                         </div> 
-                    </div>
-                </form>
+            <!--Upartment data-->
+            <div class="col-sm-4">
+                <label for="Square" class="form-label mb-0 mt-2">площадь</label>
+                <input type="number" class="form-control text-center" name="Square" id="Square">
+            </div>
+            <div class="col-sm-4">
+                <label for="RoomCount" class="form-label mb-0 mt-2">к-во комнат</label>
+                <input type="number" class="form-control text-center" name="RoomCount" id="RoomCount">
+            </div>
+            <div class="col-sm-4">
+                <label for="Price" class="form-label mb-0 mt-2">ценна $</label>
+                <input type="number" class="form-control text-center" name="Price" id="Price">
             </div>
 
-            <div class="my-3 p-3 border  border-3 d-none d-sm-block p-0" id="paymants">
+            <!--Payment data-->
+            <div class="col-sm-4">
+                <label for="PayingMonths" class="form-label mb-0 mt-2">рассрочка мес.</label>
+                <input type="number" class="form-control text-center" name="PayingMonths" id="PayingMonths">
+            </div>
+                <div class="col-sm-4">
+                    <br/>
+                    <button id="SaleFormSendBtn" type="submit" class="btn border border-primary w-100">Сохранить изменения</button>
+                </div>
+                        
+            <div class="col-sm-4">
+                <label for="payd" class="form-label">оплата/месяц</label>
+                <input type="text" class="form-control text-center" id="MonthPayment" readonly>
+            </div>
+            <div class="col-sm-4">
+                <label for="payd" class="form-label">оплачено</label>
+                <input type="text" class="form-control text-center" id="payd" readonly>
+                </div>
+                <div class="col-sm-4">
+                    <label for="haveToPay" class="form-label">ост-сь оплатить</label>
+                    <input type="text" class="form-control text-center" id="haveToPay" readonly>
+                </div> 
+        </div>
+    </form>
+</div>
+<div class="my-3 p-3 border  border-3 d-none d-sm-block p-0" id="paymants">
                 <div class="table-responsive  PaymentPanel card-body m-0 p-0">
                     <table id="PaymantsTable" class="table right-all table-hover bg-white border p-0 m-0 w-100">
                         <thead>
@@ -142,10 +134,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
 
 
 
@@ -180,7 +168,7 @@
             colReorder: true,
             lengthChange: false,
             pageLength: 50,
-            scrollY:        "82vh",
+            scrollY:        "50vh",
             
             ajax: {
                 url: "/Sales/LoadTable",
@@ -202,10 +190,10 @@
                        data: "id",
                        render(data, type, row, meta) {
                             @{<text>
-                                                                                return `
-                                                                                        <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
-                                                                                    `
-                                                                            </text>}
+                                                                            return `
+                                                                                    <a class="badge mr-2 p-2 ms-2" href="/Sales/DeleteSale?id=` + data + `" style="font-size:90%"><i id="deleteCustomer" class="fa fa-trash"></i></a>
+                                                                                `
+                                                                        </text>}
                        }
                  }
             ]
@@ -255,10 +243,10 @@
                             data: "id",
                             render(data, type, row, meta) {
                                 @{<text>
-                                                            return `
-                                                                    <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
-                                                                `
-                                                        </text>}
+                                                        return `
+                                                                <a class="badge mr-2 p-2 ms-2"><i class="fa fa-trash"></i></a>
+                                                            `
+                                                    </text>}
                             }
                         }
                     ]
