@@ -28,7 +28,7 @@ namespace KabylanMVC.PL.Controllers {
             if (ModelState.IsValid) {
                 User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
                 if (user != null) {
-                    await Authenticate(model.Email); // аутентификация
+                    await Authenticate(model.Email);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -52,14 +52,15 @@ namespace KabylanMVC.PL.Controllers {
             if (ModelState.IsValid) {
                 User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
                 if (user == null) {
-                    registerConfirm.Code = new Random(10).Next().ToString();
+                        registerConfirm.Code += new Random(DateTime.Now.Second).Next().ToString();
+
                     registerConfirm.Email = model.Email;
                     registerConfirm.Password = model.Password;
                     SendEmail(registerConfirm.Code);
 
                     return RedirectToAction("RegisterConfirm");
                 } else
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                    ModelState.AddModelError("", "Такой пользователь уже существует");
             }
             return View(model);
         }
@@ -73,7 +74,6 @@ namespace KabylanMVC.PL.Controllers {
                 await db.SaveChangesAsync();
 
                 await Authenticate(registerConfirm.Email);
-                return RedirectToAction("Index", "Home");
             }
             return RedirectToAction("Index", "Home");
         }

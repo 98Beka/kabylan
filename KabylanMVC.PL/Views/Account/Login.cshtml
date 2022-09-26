@@ -13,14 +13,14 @@
             <div class="form-group">
                 <label asp-for="Email">Введите Email</label>
                 <br />
-                <input type="text" class="form-control text-center" asp-for="Email" />
+                <input type="text" class="form-control text-center" asp-for="Email" required />
                 <span asp-validation-for="Email" />
             </div>
             <br>           
             <div class="form-group">
                 <label asp-for="Password">Введите пароль</label>
                 <br />
-                <input asp-for="Password" class="form-control text-center"/>
+                <input asp-for="Password" class="form-control text-center" required/>
                 <span asp-validation-for="Password" />
             </div>
             <br>
